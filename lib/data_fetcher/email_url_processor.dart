@@ -25,17 +25,13 @@ class EmailUrlProcessor {
 
       for (final message in fetchResult.messages) {
         final subject = message.decodeSubject();
-        print("Processing message: $subject");
         if (subject != null && subject.startsWith('RL:')) {
           final url = subject.substring(3).trim();
           if (_isValidUrl(url)) {
             await urlDatabase.addUrl(url);
-            print('Added URL to database: $url');
           }
         }
       }
-    } catch (e) {
-      print('Error processing emails: $e');
     } finally {
       await client.logout();
     }

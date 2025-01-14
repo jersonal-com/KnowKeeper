@@ -7,8 +7,7 @@ class HtmlContentWidget extends StatelessWidget {
   final String baseUrl;
 
   const HtmlContentWidget(
-      {Key? key, required this.htmlContent, required this.baseUrl})
-      : super(key: key);
+      {super.key, required this.htmlContent, required this.baseUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class HtmlContentWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
                 node.text,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           );

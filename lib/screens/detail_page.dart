@@ -5,7 +5,7 @@ import '../widgets/html_content_widget.dart';
 class DetailPage extends StatelessWidget {
   final UrlEntry entry;
 
-  const DetailPage({Key? key, required this.entry}) : super(key: key);
+  const DetailPage({super.key, required this.entry});
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +33,17 @@ class DetailPage extends StatelessWidget {
                     entry.title,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Source: ${entry.source}',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Date: ${entry.date.toString()}',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   HtmlContentWidget(
                     htmlContent: entry.text,
                     baseUrl: entry.source,

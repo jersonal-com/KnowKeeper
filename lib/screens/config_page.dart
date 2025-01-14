@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigPage extends StatefulWidget {
+  const ConfigPage({super.key});
+
   @override
-  _ConfigPageState createState() => _ConfigPageState();
+  ConfigPageState createState() => ConfigPageState();
 }
 
-class _ConfigPageState extends State<ConfigPage> {
+class ConfigPageState extends State<ConfigPage> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
@@ -44,9 +46,11 @@ class _ConfigPageState extends State<ConfigPage> {
       await prefs.setInt('imapPort', _imapPort);
       await prefs.setBool('imapSecure', _imapSecure);
       await prefs.setStringList('rssFeeds', _rssFeeds);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Configuration saved')),
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Configuration saved')),
       );
+      }
     }
   }
 
@@ -121,7 +125,7 @@ class _ConfigPageState extends State<ConfigPage> {
                   });
                 },
               ),
-            )).toList(),
+            )),
             Row(
               children: [
                 Expanded(
@@ -145,8 +149,8 @@ class _ConfigPageState extends State<ConfigPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              child: const Text('Save Configuration'),
               onPressed: _saveData,
+              child: const Text('Save Configuration'),
             ),
           ],
         ),

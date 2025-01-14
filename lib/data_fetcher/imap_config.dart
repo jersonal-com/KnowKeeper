@@ -33,6 +33,7 @@ class ImapConfig {
         password: password,
       );
     } else {
+      // ignore: avoid_print
       print('IMAP configuration is incomplete in SharedPreferences');
       return null;
     }

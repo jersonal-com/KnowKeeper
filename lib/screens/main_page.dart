@@ -6,11 +6,13 @@ import '../service/url_database_provider.dart';
 import 'detail_page.dart';
 
 class MainPage extends ConsumerStatefulWidget {
+  const MainPage({super.key});
+
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends ConsumerState<MainPage> {
+class MainPageState extends ConsumerState<MainPage> {
   late Future<void> _initFuture;
 
   @override
@@ -22,7 +24,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   Future<void> _initializeAndFetchData() async {
     final config = await ImapConfig.fromSharedPreferences();
     if (config != null) {
-      final urlDatabaseNotifier = ref.read(urlDatabaseProvider.notifier);
+      final urlDatabaseNotifier = ref.watch(urlDatabaseProvider.notifier);
       final processor = EmailUrlProcessor(
         config: config,
         urlDatabase: urlDatabaseNotifier.state,
@@ -31,7 +33,6 @@ class _MainPageState extends ConsumerState<MainPage> {
       // After processing, update the state
       urlDatabaseNotifier.state = processor.urlDatabase;
     } else {
-      print('Failed to load IMAP configuration. Please check your settings.');
     }
   }
 
@@ -45,13 +46,13 @@ class _MainPageState extends ConsumerState<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Know Keeper'),
+        title: const Text('Know Keeper'),
       ),
       body: FutureBuilder(
         future: _initFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else {
             return RefreshIndicator(
               onRefresh: _refreshData,

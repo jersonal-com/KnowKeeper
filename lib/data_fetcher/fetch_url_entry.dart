@@ -5,7 +5,6 @@ import '../data/url_entry.dart';
 
 Future<UrlEntry> fetchUrlEntry(String url) async {
   try {
-    print("Parsing webpage: $url");
 
     // Fetch the webpage
     final response = await http.get(Uri.parse(url));
@@ -15,7 +14,7 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
       final document = parse(response.body);
 
       // Extract title
-      final title = document.querySelector('title')?.text?.trim() ?? '';
+      final title = document.querySelector('title')?.text.trim() ?? '';
 
       // Extract description (assuming it's in a meta tag)
       final description = document.querySelector('meta[name="description"]')?.attributes['content'] ?? '';
@@ -24,7 +23,6 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
       final imageUrl = document.querySelector('img[src\$=".png"], img[src\$=".jpg"]')?.attributes['src'] != null
           ? Uri.parse(url).resolve(document.querySelector('img[src\$=".png"], img[src\$=".jpg"]')!.attributes['src']!).toString()
           : '';
-      print("Image URL: $imageUrl");
 
       // Extract text content (this is a simple implementation and might need refinement)
       final textContent = document.body?.innerHtml ?? '';
@@ -32,6 +30,7 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
       // Create and return the UrlEntry
       return UrlEntry(
         title: title,
+        description: description,
         source: url,
         date: DateTime.now(),
         imageUrl: imageUrl,
@@ -41,7 +40,6 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
       throw Exception('Failed to load webpage: Status ${response.statusCode}');
     }
   } catch (e) {
-    print('Error fetching URL entry: $e');
     // Return a default UrlEntry in case of error
     return UrlEntry(
       title: 'Error fetching page',
