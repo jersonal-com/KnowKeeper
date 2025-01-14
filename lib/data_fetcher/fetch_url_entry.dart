@@ -35,7 +35,7 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
         source: url,
         date: DateTime.now(),
         imageUrl: imageUrl,
-        text: description.isNotEmpty ? description : textContent.substring(0, textContent.length > 500 ? 500 : textContent.length),
+        text: textContent,
       );
     } else {
       throw Exception('Failed to load webpage: Status ${response.statusCode}');

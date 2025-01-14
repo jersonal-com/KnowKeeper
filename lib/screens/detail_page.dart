@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/url_entry.dart';
+import '../widgets/html_content_widget.dart';
 
 class DetailPage extends StatelessWidget {
   final UrlEntry entry;
@@ -43,7 +44,10 @@ class DetailPage extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   SizedBox(height: 16),
-                  Text(entry.text),
+                  HtmlContentWidget(
+                    htmlContent: entry.text,
+                    baseUrl: entry.source,
+                  ),
                 ],
               ),
             ),
@@ -52,4 +56,8 @@ class DetailPage extends StatelessWidget {
       ),
     );
   }
+}
+
+String stripHtmlIfNeeded(String text) {
+  return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
 }
