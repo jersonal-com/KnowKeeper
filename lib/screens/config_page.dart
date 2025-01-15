@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigPage extends StatefulWidget {
-  const ConfigPage({Key? key}) : super(key: key);
+  const ConfigPage({super.key});
 
   @override
   ConfigPageState createState() => ConfigPageState();
@@ -45,8 +45,8 @@ class ConfigPageState extends State<ConfigPage> {
         _imapSecure = prefs.getBool('imapSecure') ?? true;
         _rssFeeds = prefs.getStringList('rssFeeds') ?? [];
       });
-      print('Loaded data: email=${_emailController.text}, server=${_imapServerController.text}, port=${_imapPortController.text}, secure=$_imapSecure, rssFeeds=$_rssFeeds');
     } catch (e) {
+      // ignore: avoid_print
       print('Error loading saved data: $e');
     }
   }
@@ -62,13 +62,13 @@ class ConfigPageState extends State<ConfigPage> {
         await prefs.setInt('imapPort', int.parse(_imapPortController.text));
         await prefs.setBool('imapSecure', _imapSecure);
         await prefs.setStringList('rssFeeds', _rssFeeds);
-        print('Saved data: email=${_emailController.text}, server=${_imapServerController.text}, port=${_imapPortController.text}, secure=$_imapSecure, rssFeeds=$_rssFeeds');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Configuration saved')),
           );
         }
       } catch (e) {
+        // ignore: avoid_print
         print('Error saving data: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

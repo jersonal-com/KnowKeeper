@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:know_keeper/data/highlight.dart';
 import '../data/url_entry.dart';
 import '../widgets/html_content_widget.dart';
 
@@ -47,6 +48,9 @@ class DetailPage extends StatelessWidget {
                   HtmlContentWidget(
                     htmlContent: entry.text,
                     baseUrl: entry.source,
+                    highlights: [
+                      Highlight(url: entry.source, paragraphIndex: 2, startIndex: 0, length: 15)
+                    ],
                   ),
                 ],
               ),
