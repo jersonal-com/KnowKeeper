@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:html/parser.dart' as htmlparser;
+import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
 
 class HtmlContentWidget extends StatelessWidget {
   final String htmlContent;
   final String baseUrl;
 
-  const HtmlContentWidget(
-      {super.key, required this.htmlContent, required this.baseUrl});
+  const HtmlContentWidget({
+    Key? key,
+    required this.htmlContent,
+    required this.baseUrl,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final document = htmlparser.parse(htmlContent);
+    final document = parse(htmlContent);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _parseNodes(document.body!.nodes, false),
@@ -22,7 +25,8 @@ class HtmlContentWidget extends StatelessWidget {
     List<Widget> widgets = [];
 
     for (var node in nodes) {
-      if (node is dom.Element) {
+      if (node is dom.Element && node.localName != null && ! ['header', 'svg', 'script', 'meta', 'style', 'link'].any((tag) => node.localName!.contains(tag))) {
+        print("${node.localName}");
         if (node.localName!.startsWith('h') && node.localName!.length == 2) {
           // Handle heading tags (h1, h2, h3, etc.)
           foundFirstHeading = true;
@@ -36,34 +40,11 @@ class HtmlContentWidget extends StatelessWidget {
             ),
           );
         } else if (node.localName == 'img') {
-          // Handle image tags
+          // Handle image tags outside paragraphs
           _addImageWidget(widgets, node);
         } else if (node.localName == 'p') {
           // Handle paragraph tags
-          List<Widget> paragraphContent = [];
-          for (var childNode in node.nodes) {
-            if (childNode is dom.Element && childNode.localName == 'img') {
-              // Handle images within paragraphs
-              _addImageWidget(paragraphContent, childNode);
-            } else if (childNode is dom.Text) {
-              // Handle text within paragraphs
-              final trimmedText = childNode.text.trim();
-              if (trimmedText.isNotEmpty && foundFirstHeading) {
-                paragraphContent.add(Text(trimmedText));
-              }
-            }
-          }
-          if (paragraphContent.isNotEmpty) {
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: paragraphContent,
-                ),
-              ),
-            );
-          }
+          widgets.addAll(_parseParagraphContent(node, foundFirstHeading));
         } else {
           // Recursively parse child nodes
           widgets.addAll(_parseNodes(node.nodes, foundFirstHeading));
@@ -72,6 +53,36 @@ class HtmlContentWidget extends StatelessWidget {
     }
 
     return widgets;
+  }
+
+  List<Widget> _parseParagraphContent(dom.Element paragraphNode, bool foundFirstHeading) {
+    List<Widget> paragraphWidgets = [];
+    StringBuffer textBuffer = StringBuffer();
+
+    void addTextWidget() {
+      if (textBuffer.isNotEmpty && foundFirstHeading) {
+        paragraphWidgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Text(textBuffer.toString().trim()),
+          ),
+        );
+        textBuffer.clear();
+      }
+    }
+
+    for (var child in paragraphNode.nodes) {
+      if (child is dom.Text) {
+        textBuffer.write(child.text);
+      } else if (child is dom.Element && child.localName == 'img') {
+        addTextWidget(); // Add accumulated text before the image
+        _addImageWidget(paragraphWidgets, child);
+      }
+    }
+
+    addTextWidget(); // Add any remaining text after the last image
+
+    return paragraphWidgets;
   }
 
   void _addImageWidget(List<Widget> widgetList, dom.Element imgElement) {
@@ -88,7 +99,6 @@ class HtmlContentWidget extends StatelessWidget {
       );
     }
   }
-
 
   String _resolveUrl(String url) {
     if (url.startsWith('http://') || url.startsWith('https://')) {
