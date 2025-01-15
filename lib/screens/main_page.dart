@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data_fetcher/email_url_processor.dart';
 import '../data_fetcher/imap_config.dart';
 import '../service/url_database_provider.dart';
+import 'config_page.dart';
 import 'detail_page.dart';
 
 class MainPage extends ConsumerStatefulWidget {
@@ -47,8 +48,25 @@ class MainPageState extends ConsumerState<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Know Keeper'),
-      ),
-      body: FutureBuilder(
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'config') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ConfigPage()),
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'config',
+                child: Text('Configuration'),
+              ),
+            ],
+          ),
+        ],
+      ),      body: FutureBuilder(
         future: _initFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

@@ -26,7 +26,6 @@ class HtmlContentWidget extends StatelessWidget {
 
     for (var node in nodes) {
       if (node is dom.Element && node.localName != null && ! ['header', 'svg', 'script', 'meta', 'style', 'link'].any((tag) => node.localName!.contains(tag))) {
-        print("${node.localName}");
         if (node.localName!.startsWith('h') && node.localName!.length == 2) {
           // Handle heading tags (h1, h2, h3, etc.)
           foundFirstHeading = true;
