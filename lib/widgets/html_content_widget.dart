@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
@@ -8,11 +9,13 @@ class HtmlContentWidget extends StatelessWidget {
   final String htmlContent;
   final String baseUrl;
   final List<Highlight> highlights;
+  final Function(int, int, int) onCreateHighlight;
 
   const HtmlContentWidget({
     super.key,
     required this.htmlContent,
     required this.baseUrl,
+    required this.onCreateHighlight,
     this.highlights = const [],
   });
 
@@ -104,7 +107,7 @@ class HtmlContentWidget extends StatelessWidget {
 
     for (var highlight in paragraphHighlights) {
       if (highlight.startIndex > currentIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, highlight.startIndex)));
+        spans.add(_buildSelectableTextSpan(context, text.substring(currentIndex, highlight.startIndex), paragraphIndex, currentIndex));
       }
       spans.add(TextSpan(
         text: text.substring(highlight.startIndex, highlight.startIndex + highlight.length),
@@ -114,7 +117,7 @@ class HtmlContentWidget extends StatelessWidget {
     }
 
     if (currentIndex < text.length) {
-      spans.add(TextSpan(text: text.substring(currentIndex)));
+      spans.add(_buildSelectableTextSpan(context, text.substring(currentIndex), paragraphIndex, currentIndex));
     }
 
     return Padding(
@@ -127,6 +130,36 @@ class HtmlContentWidget extends StatelessWidget {
       ),
     );
   }
+
+  TextSpan _buildSelectableTextSpan(BuildContext context, String text, int paragraphIndex, int startIndex) {
+    return TextSpan(
+      text: text,
+      recognizer: LongPressGestureRecognizer()
+        ..onLongPress = () {
+          final TextSelection selection = TextSelection.collapsed(offset: startIndex);
+          final RenderBox renderObject = context.findRenderObject() as RenderBox;
+          final Offset offset = renderObject.localToGlobal(Offset.zero);
+          showMenu(
+            context: context,
+            position: RelativeRect.fromLTRB(
+              offset.dx,
+              offset.dy + renderObject.size.height,
+              offset.dx + renderObject.size.width,
+              offset.dy + renderObject.size.height + 48,
+            ),
+            items: [
+              PopupMenuItem(
+                child: Text('Highlight'),
+                onTap: () {
+                  onCreateHighlight(paragraphIndex, selection.baseOffset, selection.extentOffset - selection.baseOffset);
+                },
+              ),
+            ],
+          );
+        },
+    );
+  }
+
 
   Widget _buildImageWidget(dom.Element imgElement) {
     final src = imgElement.attributes['src'];

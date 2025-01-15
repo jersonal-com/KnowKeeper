@@ -3,24 +3,49 @@ import 'package:know_keeper/data/highlight.dart';
 import '../data/url_entry.dart';
 import '../widgets/html_content_widget.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends StatefulWidget {
   final UrlEntry entry;
+  final String baseUrl;
 
-  const DetailPage({super.key, required this.entry});
+  const DetailPage({
+  Key? key,
+  required this.entry,
+  required this.baseUrl,
+  }) : super(key: key);
+
+  @override
+  _DetailPageState createState() => _DetailPageState();
+  }
+
+  class _DetailPageState extends State<DetailPage> {
+  List<Highlight> highlights = [];
+
+  void _createHighlight(int paragraphIndex, int startIndex, int length) {
+  setState(() {
+  highlights.add(Highlight(
+  url: widget.baseUrl,
+  paragraphIndex: paragraphIndex,
+  startIndex: startIndex,
+  length: length,
+  ));
+  });
+  // Here you would typically save the highlight to your database or state management solution
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(entry.title),
+        title: Text(widget.entry.title),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (entry.imageUrl != null && entry.imageUrl!.isNotEmpty)
+            if (widget.entry.imageUrl != null && widget.entry.imageUrl!.isNotEmpty)
               Image.network(
-                entry.imageUrl!,
+                widget.entry.imageUrl!,
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
@@ -31,25 +56,26 @@ class DetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    entry.title,
+                    widget.entry.title,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Source: ${entry.source}',
+                    'Source: ${widget.entry.source}',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Date: ${entry.date.toString()}',
+                    'Date: ${widget.entry.date.toString()}',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   const SizedBox(height: 16),
                   HtmlContentWidget(
-                    htmlContent: entry.text,
-                    baseUrl: entry.source,
+                    htmlContent: widget.entry.text,
+                    baseUrl: widget.entry.source,
+                    onCreateHighlight: _createHighlight,
                     highlights: [
-                      Highlight(url: entry.source, paragraphIndex: 2, startIndex: 0, length: 15)
+                      Highlight(url: widget.entry.source, paragraphIndex: 2, startIndex: 0, length: 15)
                     ],
                   ),
                 ],
