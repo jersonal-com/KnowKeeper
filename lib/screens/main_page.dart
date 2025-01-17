@@ -64,7 +64,7 @@ class MainPageState extends ConsumerState<MainPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.refresh(urlEntriesProvider);
+          ref.invalidate(urlEntriesProvider);
         },
         child: urlEntriesAsyncValue.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -136,13 +136,13 @@ class MainPageState extends ConsumerState<MainPage> {
   void _archiveEntry(WidgetRef ref, UrlEntry entry) async {
     final updatedEntry = entry.copyWith(archived: true);
     await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
-    ref.refresh(urlEntriesProvider);
+    ref.invalidate(urlEntriesProvider);
   }
 
   void _deleteEntry(WidgetRef ref, UrlEntry entry) async {
     final updatedEntry = entry.copyWith(archived: true, deleted: true);
     await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
-    ref.refresh(urlEntriesProvider);
+    ref.invalidate(urlEntriesProvider);
   }
 
 }

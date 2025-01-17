@@ -11,14 +11,14 @@ import '../widgets/html_content_widget.dart';
 class DetailPage extends ConsumerStatefulWidget {
   final String url;
 
-  DetailPage({required this.url});
+  const DetailPage({super.key, required this.url});
 
   @override
-  _DetailPageState createState() => _DetailPageState();
+  DetailPageState createState() => DetailPageState();
 }
 
-class _DetailPageState extends ConsumerState<DetailPage> {
-  HighlightMode _currentHighlightMode = HighlightMode.none;
+class DetailPageState extends ConsumerState<DetailPage> {
+  final _currentHighlightMode = HighlightMode.none;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,10 @@ class _DetailPageState extends ConsumerState<DetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Article Details'),
+        title: const Text('Article Details'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               if (currentSelection != null) {
                 final highlight = Highlight(
@@ -42,14 +42,14 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                   length: currentSelection.length,
                 );
                 databaseOps.addOrUpdateHighlight(highlight).then((_) {
-                  ref.refresh(highlightsProvider(widget.url));
+                  ref.invalidate(highlightsProvider(widget.url));
                   ref.read(currentSelectionProvider.notifier).state = null;
                 });
               }
             },
           ),
           IconButton(
-            icon: Icon(Icons.remove),
+            icon: const Icon(Icons.remove),
             onPressed: () {
               if (currentSelection != null) {
                 highlightsAsyncValue.whenData((highlights) {
@@ -60,7 +60,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                   );
                   if (overlappingHighlight != null) {
                     databaseOps.deleteHighlight(overlappingHighlight).then((_) {
-                      ref.refresh(highlightsProvider(widget.url));
+                      ref.invalidate(highlightsProvider(widget.url));
                       ref.read(currentSelectionProvider.notifier).state = null;
                     });
                   }
@@ -70,7 +70,7 @@ class _DetailPageState extends ConsumerState<DetailPage> {
           ),
         ],      ),
       body: urlEntryAsyncValue.when(
-        loading: () => Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (urlEntry) {
           if (urlEntry == null) {
@@ -88,11 +88,11 @@ class _DetailPageState extends ConsumerState<DetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(urlEntry.title, style: Theme.of(context).textTheme.titleSmall),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(urlEntry.description, style: Theme.of(context).textTheme.headlineSmall),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       highlightsAsyncValue.when(
-                        loading: () => CircularProgressIndicator(),
+                        loading: () => const CircularProgressIndicator(),
                         error: (err, stack) => Text('Error loading highlights: $err'),
                         data: (highlights) => HtmlContentWidget(
                           htmlContent: urlEntry.text,

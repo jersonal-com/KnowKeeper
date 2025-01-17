@@ -21,7 +21,6 @@ class DatabaseOperations {
   }
 
   Future<void> addOrUpdateHighlight(Highlight highlight) {
-    print("Sending to DB: ${highlight.url}, ${highlight.paragraphIndex}, ${highlight.startIndex}, ${highlight.length}");
     return database.addOrUpdateHighlight(highlight);
   }
 

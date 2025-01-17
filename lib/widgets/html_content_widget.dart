@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' show parse;
@@ -26,6 +25,7 @@ class HtmlContentWidget extends ConsumerStatefulWidget {
 }
 
 class HtmlContentWidgetState extends ConsumerState<HtmlContentWidget> {
+  // ignore: unused_field
   late List<dom.Element> _paragraphs;
 
   @override
@@ -42,8 +42,6 @@ class HtmlContentWidgetState extends ConsumerState<HtmlContentWidget> {
   @override
   Widget build(BuildContext context) {
     final document = parse(widget.htmlContent);
-
-    print("Highlights: ${widget.highlights}");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,16 +137,13 @@ class HtmlContentWidgetState extends ConsumerState<HtmlContentWidget> {
       spans.add(TextSpan(text: text.substring(currentIndex)));
     }
 
-    final paragraph = text;
-    final paragraphHighlights = widget.highlights.where((h) => h.paragraphIndex == paragraphIndex).toList();
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: SelectableText.rich(
         TextSpan(children: spans),
         style: DefaultTextStyle.of(context).style,
         onSelectionChanged: (selection, cause) {
-          if (selection != null && selection.baseOffset != selection.extentOffset) {
+          if (selection.baseOffset != selection.extentOffset) {
             ref.read(currentSelectionProvider.notifier).state = Selection(
               paragraphIndex: paragraphIndex,
               startIndex: selection.start,

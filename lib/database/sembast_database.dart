@@ -38,7 +38,6 @@ class SembastDatabase {
 
   Future<void> _openDatabase() async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    print("Path: ${appDocumentDir.path}");
     final dbPath = join(appDocumentDir.path, DB_NAME);
     final database = await databaseFactoryIo.openDatabase(dbPath);
     _dbOpenCompleter!.complete(database);
@@ -70,11 +69,6 @@ class SembastDatabase {
 
   Future<void> addOrUpdateHighlight(Highlight highlight) async {
     final db = await database;
-    final finder = Finder(filter: Filter.and([
-      Filter.equals('url', highlight.url),
-      Filter.equals('paragraphIndex', highlight.paragraphIndex),
-      Filter.equals('startIndex', highlight.startIndex),
-    ]));
     await _highlightsStoreRef.add(
       db,
       highlight.toMap(),
@@ -132,7 +126,6 @@ class SembastDatabase {
     final store = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
     final finder = Finder(filter: Filter.equals('url', url));
     final snapshots = await store.find(db, finder: finder);
-    print("Highlights: ${snapshots.map((snapshot) => Highlight.fromMap(snapshot.value))}");
     return snapshots.map((snapshot) => Highlight.fromMap(snapshot.value)).toList();
   }
 

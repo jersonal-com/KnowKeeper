@@ -37,6 +37,7 @@ class RssProcessor extends Processor {
           }
         }
       } catch (e) {
+        // ignore: avoid_print
         print('Error processing RSS feed $feedUrl: $e');
       }
     }
