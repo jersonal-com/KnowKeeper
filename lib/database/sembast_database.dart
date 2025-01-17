@@ -12,6 +12,7 @@ class SembastDatabase {
   static const String DB_NAME = 'know_keeper.db';
   static const String URL_STORE_NAME = 'url_entries';
   static const String HIGHLIGHT_STORE_NAME = 'highlights';
+  final _highlightsStoreRef = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
 
   // Singleton instance
   static final SembastDatabase _singleton = SembastDatabase._();
@@ -108,6 +109,25 @@ class SembastDatabase {
     }
     return null;
   }
+
+  Future<void> deleteHighlight(Highlight highlight) async {
+    // Create a finder to locate the specific highlight
+    final finder = Finder(
+      filter: Filter.and([
+        Filter.equals('url', highlight.url),
+        Filter.equals('paragraphIndex', highlight.paragraphIndex),
+        Filter.equals('startIndex', highlight.startIndex),
+        Filter.equals('length', highlight.length),
+      ])
+    );
+
+    // Delete the record from the database
+    await _highlightsStoreRef.delete(
+      await database,
+      finder: finder,
+    );
+  }
+
 
   Future<List<Highlight>> getHighlightsForUrl(String url) async {
     final db = await database;

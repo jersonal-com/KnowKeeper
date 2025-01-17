@@ -8,12 +8,14 @@ class HtmlContentWidget extends StatefulWidget {
   final String baseUrl;
   final List<Highlight> highlights;
   final Function(int, int, int) onCreateHighlight;
+  final Function(Highlight) onDeleteHighlight;
 
   const HtmlContentWidget({
     super.key,
     required this.htmlContent,
     required this.baseUrl,
     required this.onCreateHighlight,
+    required this.onDeleteHighlight,
     this.highlights = const [],
   });
 
@@ -30,9 +32,35 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
     });
   }
 
+  void _handleHighlightTap(Highlight highlight) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Highlight'),
+        content: Text('Do you want to delete this highlight?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.onDeleteHighlight(highlight);
+              Navigator.of(context).pop();
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final document = parse(widget.htmlContent);
+
+    print("Highlights: ${widget.highlights}");
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
