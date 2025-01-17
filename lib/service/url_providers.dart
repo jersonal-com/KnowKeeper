@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:know_keeper/data_fetcher/rss_processor.dart';
 import '../data_fetcher/processor.dart';
 import '../data_fetcher/email_url_processor.dart';
 import '../data/url_entry.dart';
@@ -8,6 +9,7 @@ import 'database_providers.dart';
 final processorsProvider = Provider<List<Processor>>((ref) {
   return [
     EmailUrlProcessor(),
+    RssProcessor(),
     // Add other processors here in the future
   ];
 });

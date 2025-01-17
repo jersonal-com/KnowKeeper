@@ -8,6 +8,7 @@ class UrlEntry {
   final String imageUrl;
   final String text;
   bool archived;
+  bool deleted;
 
   UrlEntry({
     this.id,
@@ -19,6 +20,7 @@ class UrlEntry {
     required this.imageUrl,
     required this.text,
     this.archived = false,
+    this.deleted = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +33,7 @@ class UrlEntry {
       'imageUrl': imageUrl,
       'text': text,
       'archived': archived,
+      'deleted': deleted,
     };
   }
 
@@ -44,6 +47,34 @@ class UrlEntry {
       imageUrl: map['imageUrl'],
       text: map['text'],
       archived: map['archived'] ?? false,
+      deleted: map['deleted'] ?? false,
+    );
+  }
+
+  /// Creates a copy of this UrlEntry with the given values.
+  UrlEntry copyWith({
+    int? id,
+    String? url,
+    String? title,
+    String? description,
+    String? source,
+    DateTime? date,
+    String? imageUrl,
+    String? text,
+    bool? archived,
+    bool? deleted,
+  }) {
+    return UrlEntry(
+      id: id ?? this.id,
+      url: url ?? this.url,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      source: source ?? this.source,
+      date: date ?? this.date,
+      imageUrl: imageUrl ?? this.imageUrl,
+      text: text ?? this.text,
+      archived: archived ?? this.archived,
+      deleted: deleted ?? this.deleted,
     );
   }
 }
