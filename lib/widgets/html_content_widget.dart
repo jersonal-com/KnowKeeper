@@ -10,12 +10,12 @@ class HtmlContentWidget extends StatefulWidget {
   final Function(int, int, int) onCreateHighlight;
 
   const HtmlContentWidget({
-    Key? key,
+    super.key,
     required this.htmlContent,
     required this.baseUrl,
     required this.onCreateHighlight,
     this.highlights = const [],
-  }) : super(key: key);
+  });
 
   @override
   HtmlContentWidgetState createState() => HtmlContentWidgetState();
@@ -39,8 +39,8 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
         if (_highlightMode)
           Container(
             color: Colors.yellow.withOpacity(0.3),
-            padding: EdgeInsets.all(8),
-            child: Text('Highlight mode active. Select text to highlight.'),
+            padding: const EdgeInsets.all(8),
+            child: const Text('Highlight mode active. Select text to highlight.'),
           ),
         ..._parseNodes(context, document.body!.nodes),
       ],
@@ -124,7 +124,7 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
       }
       spans.add(TextSpan(
         text: text.substring(highlight.startIndex, highlight.startIndex + highlight.length),
-        style: TextStyle(backgroundColor: Colors.yellow),
+        style: const TextStyle(backgroundColor: Colors.yellow),
       ));
       currentIndex = highlight.startIndex + highlight.length;
     }

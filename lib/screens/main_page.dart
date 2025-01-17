@@ -5,11 +5,13 @@ import 'detail_page.dart';
 import 'config_page.dart';  // Add this import
 
 class MainPage extends ConsumerStatefulWidget {
+  const MainPage({super.key});
+
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends ConsumerState<MainPage> {
+class MainPageState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
@@ -23,6 +25,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     for (final processor in processors) {
       await processor.process();
     }
+    // ignore: unused_result
     ref.refresh(urlEntriesProvider);
   }
 
@@ -32,14 +35,14 @@ class _MainPageState extends ConsumerState<MainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Know Keeper'),
+        title: const Text('Know Keeper'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'config') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ConfigPage()),
+                  MaterialPageRoute(builder: (context) => const ConfigPage()),
                 );
               }
             },
@@ -57,7 +60,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: urlEntriesAsyncValue.when(
-          loading: () => Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
           data: (urlEntries) {
             return ListView.builder(
@@ -71,7 +74,6 @@ class _MainPageState extends ConsumerState<MainPage> {
                   title: Text(entry.title),
                   subtitle: Text(entry.description),
                   onTap: () {
-                    print("Opening url: ${entry.url}");
                     Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -1,6 +1,7 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:async';
 
-import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -99,9 +100,7 @@ class SembastDatabase {
     final db = await database;
     final store = intMapStoreFactory.store(URL_STORE_NAME);
     final finder = Finder(filter: Filter.equals('url', url));
-    print('Finder: $finder');
     final snapshot = await store.findFirst(db, finder: finder);
-    print('Snapshot: $snapshot');
     if (snapshot != null) {
       final entry = UrlEntry.fromMap(snapshot.value);
       entry.id = snapshot.key;

@@ -1,5 +1,4 @@
 import 'package:enough_mail/enough_mail.dart';
-import '../data/url_entry.dart';
 import '../database/sembast_database.dart';
 import 'imap_config.dart';
 import 'fetch_url_entry.dart';
@@ -20,7 +19,6 @@ class EmailUrlProcessor implements Processor {
   @override
   Future<void> process() async {
     if (_config == null) {
-      print('IMAP configuration is not set. Skipping email processing.');
       return;
     }
 
@@ -45,6 +43,7 @@ class EmailUrlProcessor implements Processor {
         }
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Error processing emails: $e');
     } finally {
       await client.logout();

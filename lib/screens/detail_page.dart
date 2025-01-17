@@ -8,7 +8,7 @@ import '../database/sembast_database.dart';
 class DetailPage extends ConsumerWidget {
   final String url;
 
-  DetailPage({required this.url});
+  const DetailPage({super.key, required this.url});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,15 +23,16 @@ class DetailPage extends ConsumerWidget {
         length: length,
       );
       await SembastDatabase.instance.addOrUpdateHighlight(highlight);
+      // ignore: unused_result
       ref.refresh(highlightsProvider(url));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Article Details'),
+        title: const Text('Article Details'),
       ),
       body: urlEntryAsyncValue.when(
-        loading: () => Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (urlEntry) {
           if (urlEntry == null) {
@@ -49,9 +50,9 @@ class DetailPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(urlEntry.title, style: Theme.of(context).textTheme.titleSmall),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(urlEntry.description, style: Theme.of(context).textTheme.headlineSmall),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       HtmlContentWidget(
                         htmlContent: urlEntry.text,
                         baseUrl: Uri.parse(urlEntry.url).origin,
