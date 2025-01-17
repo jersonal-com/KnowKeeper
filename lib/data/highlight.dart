@@ -3,12 +3,14 @@ class Highlight {
   final int paragraphIndex;
   final int startIndex;
   final int length;
+  final String text;
 
   Highlight({
     required this.url,
     required this.paragraphIndex,
     required this.startIndex,
     required this.length,
+    required this.text
   });
 
   Map<String, dynamic> toMap() {
@@ -17,6 +19,7 @@ class Highlight {
       'paragraphIndex': paragraphIndex,
       'startIndex': startIndex,
       'length': length,
+      'text': text,
     };
   }
 
@@ -26,6 +29,7 @@ class Highlight {
       paragraphIndex: map['paragraphIndex'],
       startIndex: map['startIndex'],
       length: map['length'],
+      text: map['text'],
     );
   }
 }

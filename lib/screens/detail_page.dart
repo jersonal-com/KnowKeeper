@@ -40,6 +40,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   paragraphIndex: currentSelection.paragraphIndex,
                   startIndex: currentSelection.startIndex,
                   length: currentSelection.length,
+                  text: currentSelection.text,
                 );
                 databaseOps.addOrUpdateHighlight(highlight).then((_) {
                   ref.invalidate(highlightsProvider(widget.url));

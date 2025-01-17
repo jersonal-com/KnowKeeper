@@ -5,7 +5,8 @@ import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
 import 'detail_page.dart';
-import 'config_page.dart';  // Add this import
+import 'config_page.dart';
+import 'export_page.dart';  // Add this import
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -49,21 +50,26 @@ class MainPageState extends ConsumerState<MainPage> {
                   context,
                   MaterialPageRoute(builder: (context) => const ConfigPage()),
                 );
+              } else if (value == 'export') {  // Add this condition
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExportPage()),
+                );
               }
             },
             itemBuilder: (BuildContext context) {
-              return {'Config'}.map((String choice) {
+              return {'Config', 'Export'}.map((String choice) {  // Add 'Export' to the list
                 return PopupMenuItem<String>(
-                  value: 'config',
+                  value: choice.toLowerCase(),
                   child: Text(choice),
                 );
               }).toList();
             },
           ),
-        ],
-      ),
+        ],      ),
       body: RefreshIndicator(
         onRefresh: () async {
+          await _refreshData();
           ref.invalidate(urlEntriesProvider);
         },
         child: urlEntriesAsyncValue.when(

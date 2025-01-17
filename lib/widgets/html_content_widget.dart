@@ -148,6 +148,7 @@ class HtmlContentWidgetState extends ConsumerState<HtmlContentWidget> {
               paragraphIndex: paragraphIndex,
               startIndex: selection.start,
               length: selection.end - selection.start,
+              text: text.substring(selection.start, selection.end),
             );
           }
         },

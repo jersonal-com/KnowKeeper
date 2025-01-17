@@ -12,6 +12,10 @@ class DatabaseOperations {
 
   DatabaseOperations(this.database);
 
+  Future<List<UrlEntry>> getNonArchivedUrlEntries() {
+    return database.getNonArchivedUrlEntries();
+  }
+
   Future<void> addOrUpdateUrlEntry(UrlEntry entry) {
     return database.addUrlEntry(entry);
   }

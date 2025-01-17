@@ -18,15 +18,18 @@ class EmailUrlProcessor implements Processor {
 
   @override
   Future<void> process() async {
+
     if (_config == null) {
       return;
     }
 
     final client = ImapClient(isLogEnabled: false);
 
+
     try {
       await client.connectToServer(_config!.server, _config!.port, isSecure: _config!.isSecure);
       await client.login(_config!.username, _config!.password);
+
 
       await client.selectInbox();
       final fetchResult = await client.fetchRecentMessages(
