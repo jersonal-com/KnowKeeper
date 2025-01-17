@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/url_entry.dart';
 import '../database/sembast_database.dart';
 import '../data/highlight.dart';
 
@@ -10,6 +11,10 @@ class DatabaseOperations {
   final SembastDatabase database;
 
   DatabaseOperations(this.database);
+
+  Future<void> addOrUpdateUrlEntry(UrlEntry entry) {
+    return database.addUrlEntry(entry);
+  }
 
   Future<List<Highlight>> getHighlightsForUrl(String url) {
     return database.getHighlightsForUrl(url);

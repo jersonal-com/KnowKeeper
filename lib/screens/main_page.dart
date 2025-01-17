@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
 import 'detail_page.dart';
@@ -33,6 +35,8 @@ class MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     final urlEntriesAsyncValue = ref.watch(urlEntriesProvider);
+    final screenSize = MediaQuery.of(context).size;
+    final imageWidth = (screenSize.width < screenSize.height ? screenSize.width : screenSize.height) * 0.2;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +63,9 @@ class MainPageState extends ConsumerState<MainPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshData,
+        onRefresh: () async {
+          ref.refresh(urlEntriesProvider);
+        },
         child: urlEntriesAsyncValue.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
@@ -68,20 +74,56 @@ class MainPageState extends ConsumerState<MainPage> {
               itemCount: urlEntries.length,
               itemBuilder: (context, index) {
                 final entry = urlEntries[index];
-                return ListTile(
-                  leading: entry.imageUrl.isNotEmpty
-                      ? Image.network(entry.imageUrl)
-                      : null,
-                  title: Text(entry.title),
-                  subtitle: Text(entry.description),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailPage(url: entry.url),
+                return Slidable(
+                  key: ValueKey(entry.url),
+                  endActionPane: ActionPane(
+                    motion: const ScrollMotion(),
+                    children: [
+                      SlidableAction(
+                        onPressed: (context) => _archiveEntry(ref, entry),
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        icon: Icons.archive,
+                        label: 'Archive',
                       ),
-                    );
-                  },
+                      SlidableAction(
+                        onPressed: (context) => _deleteEntry(ref, entry),
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: 'Delete',
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    leading: entry.imageUrl.isNotEmpty
+                        ? SizedBox(
+                      width: imageWidth,
+                      height: imageWidth,
+                      child: Image.network(
+                        entry.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(Icons.error, size: imageWidth);
+                        },
+                      ),
+                    )
+                        : SizedBox(
+                      width: imageWidth,
+                      height: imageWidth,
+                      child: Icon(Icons.article, size: imageWidth * 0.6),
+                    ),
+                    title: Text(entry.title),
+                    subtitle: Text(entry.description),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(url: entry.url),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );
@@ -90,4 +132,17 @@ class MainPageState extends ConsumerState<MainPage> {
       ),
     );
   }
+
+  void _archiveEntry(WidgetRef ref, UrlEntry entry) async {
+    final updatedEntry = entry.copyWith(archived: true);
+    await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
+    ref.refresh(urlEntriesProvider);
+  }
+
+  void _deleteEntry(WidgetRef ref, UrlEntry entry) async {
+    final updatedEntry = entry.copyWith(archived: true, deleted: true);
+    await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
+    ref.refresh(urlEntriesProvider);
+  }
+
 }
