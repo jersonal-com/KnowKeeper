@@ -13,6 +13,7 @@ class SembastDatabase {
   static const String URL_STORE_NAME = 'url_entries';
   static const String HIGHLIGHT_STORE_NAME = 'highlights';
   final _highlightsStoreRef = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
+  final _urlStoreRef = intMapStoreFactory.store(URL_STORE_NAME);
 
   // Singleton instance
   static final SembastDatabase _singleton = SembastDatabase._();
@@ -37,6 +38,7 @@ class SembastDatabase {
 
   Future<void> _openDatabase() async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
+    print("Path: ${appDocumentDir.path}");
     final dbPath = join(appDocumentDir.path, DB_NAME);
     final database = await databaseFactoryIo.openDatabase(dbPath);
     _dbOpenCompleter!.complete(database);
@@ -132,6 +134,12 @@ class SembastDatabase {
     final snapshots = await store.find(db, finder: finder);
     print("Highlights: ${snapshots.map((snapshot) => Highlight.fromMap(snapshot.value))}");
     return snapshots.map((snapshot) => Highlight.fromMap(snapshot.value)).toList();
+  }
+
+  Future<void> wipeDatabase() async {
+    final db = await database;
+    await _highlightsStoreRef.drop(db);
+    await _urlStoreRef.drop(db);
   }
 
 }

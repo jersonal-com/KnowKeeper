@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../service/database_providers.dart';
 import '../service/url_providers.dart';
 import 'detail_page.dart';
 import 'config_page.dart';  // Add this import
@@ -21,12 +22,12 @@ class MainPageState extends ConsumerState<MainPage> {
   }
 
   Future<void> _refreshData() async {
+    // await ref.read(databaseProvider).wipe();
     final processors = ref.read(processorsProvider);
     for (final processor in processors) {
       await processor.process();
     }
-    // ignore: unused_result
-    ref.refresh(urlEntriesProvider);
+    ref.invalidate(urlEntriesProvider);
   }
 
   @override

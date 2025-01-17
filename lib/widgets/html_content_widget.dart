@@ -1,64 +1,42 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
+import 'package:know_keeper/data/highlight_mode.dart';
 import '../data/highlight.dart';
+import '../service/selection_provider.dart';
 
-class HtmlContentWidget extends StatefulWidget {
+class HtmlContentWidget extends ConsumerStatefulWidget {
   final String htmlContent;
   final String baseUrl;
   final List<Highlight> highlights;
-  final Function(int, int, int) onCreateHighlight;
-  final Function(Highlight) onDeleteHighlight;
+  final HighlightMode highlightMode;
 
   const HtmlContentWidget({
     super.key,
     required this.htmlContent,
     required this.baseUrl,
-    required this.onCreateHighlight,
-    required this.onDeleteHighlight,
     this.highlights = const [],
+    required this.highlightMode,
   });
 
   @override
   HtmlContentWidgetState createState() => HtmlContentWidgetState();
 }
 
-class HtmlContentWidgetState extends State<HtmlContentWidget> {
-  bool _highlightMode = false;
+class HtmlContentWidgetState extends ConsumerState<HtmlContentWidget> {
+  late List<dom.Element> _paragraphs;
 
-  void toggleHighlightMode() {
-    setState(() {
-      _highlightMode = !_highlightMode;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _parseParagraphs();
   }
 
-  void _handleHighlightTap(Highlight highlight) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Delete Highlight'),
-        content: Text('Do you want to delete this highlight?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.onDeleteHighlight(highlight);
-              Navigator.of(context).pop();
-            },
-            child: Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _handleSelection(int paragraphIndex, String selectedText, int startIndex) {
-    if (selectedText.isNotEmpty) {
-      widget.onCreateHighlight(paragraphIndex, startIndex, selectedText.length);
-    }
+  void _parseParagraphs() {
+    final document = parse(widget.htmlContent);
+    _paragraphs = document.body!.children;
   }
 
   @override
@@ -70,12 +48,6 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_highlightMode)
-          Container(
-            color: Colors.yellow.withOpacity(0.3),
-            padding: const EdgeInsets.all(8),
-            child: const Text('Highlight mode active. Select text to highlight.'),
-          ),
         ..._parseNodes(context, document.body!.nodes),
       ],
     );
@@ -170,24 +142,20 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
     final paragraph = text;
     final paragraphHighlights = widget.highlights.where((h) => h.paragraphIndex == paragraphIndex).toList();
 
-    return GestureDetector(
-      onLongPress: () {
-        if (_highlightMode) {
-          // Handle highlight creation
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: SelectableText.rich(
-          TextSpan(children: spans),
-          style: DefaultTextStyle.of(context).style,
-          onSelectionChanged: (selection, cause) {
-              final selectedText = paragraph.substring(selection.start, selection.end);
-              print("Selected text: $selectedText, start: ${selection.start}, end: ${selection.end}");
-              print("Index: $paragraphIndex");
-              _handleSelection(paragraphIndex, selectedText, selection.start);
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: SelectableText.rich(
+        TextSpan(children: spans),
+        style: DefaultTextStyle.of(context).style,
+        onSelectionChanged: (selection, cause) {
+          if (selection != null && selection.baseOffset != selection.extentOffset) {
+            ref.read(currentSelectionProvider.notifier).state = Selection(
+              paragraphIndex: paragraphIndex,
+              startIndex: selection.start,
+              length: selection.end - selection.start,
+            );
+          }
+        },
       ),
     );
   }

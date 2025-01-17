@@ -23,4 +23,9 @@ class DatabaseOperations {
   Future<void> deleteHighlight(Highlight highlight) {
     return database.deleteHighlight(highlight);
   }
+
+  Future<void> wipe() async {
+    return await database.wipeDatabase();
+  }
+
 }
