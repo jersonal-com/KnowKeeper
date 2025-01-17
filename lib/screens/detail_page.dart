@@ -5,39 +5,44 @@ import '../widgets/html_content_widget.dart';
 
 class DetailPage extends StatefulWidget {
   final UrlEntry entry;
-  final String baseUrl;
+final String baseUrl;
 
-  const DetailPage({
-  Key? key,
-  required this.entry,
-  required this.baseUrl,
-  }) : super(key: key);
+  const DetailPage({Key? key, required this.entry, required this.baseUrl}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
-  }
+}
 
-  class _DetailPageState extends State<DetailPage> {
+class _DetailPageState extends State<DetailPage> {
   List<Highlight> highlights = [];
+  final GlobalKey<HtmlContentWidgetState> _htmlContentKey = GlobalKey();
 
   void _createHighlight(int paragraphIndex, int startIndex, int length) {
-  setState(() {
-  highlights.add(Highlight(
-  url: widget.baseUrl,
-  paragraphIndex: paragraphIndex,
-  startIndex: startIndex,
-  length: length,
-  ));
-  });
-  // Here you would typically save the highlight to your database or state management solution
+    setState(() {
+      highlights.add(Highlight(
+        url: widget.entry.source,
+        paragraphIndex: paragraphIndex,
+        startIndex: startIndex,
+        length: length,
+      ));
+    });
+    // Here you would typically save the highlight to your database or state management solution
+    print("Highlight created: paragraphIndex=$paragraphIndex, startIndex=$startIndex, length=$length");
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.entry.title),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.highlight),
+            onPressed: () {
+              _htmlContentKey.currentState?.toggleHighlightMode();
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -57,7 +62,7 @@ class DetailPage extends StatefulWidget {
                 children: [
                   Text(
                     widget.entry.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -71,12 +76,11 @@ class DetailPage extends StatefulWidget {
                   ),
                   const SizedBox(height: 16),
                   HtmlContentWidget(
+                    key: _htmlContentKey,
                     htmlContent: widget.entry.text,
                     baseUrl: widget.entry.source,
                     onCreateHighlight: _createHighlight,
-                    highlights: [
-                      Highlight(url: widget.entry.source, paragraphIndex: 2, startIndex: 0, length: 15)
-                    ],
+                    highlights: highlights,
                   ),
                 ],
               ),
@@ -86,8 +90,4 @@ class DetailPage extends StatefulWidget {
       ),
     );
   }
-}
-
-String stripHtmlIfNeeded(String text) {
-  return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
 }

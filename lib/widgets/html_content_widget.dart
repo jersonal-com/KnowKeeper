@@ -1,30 +1,49 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
-
 import '../data/highlight.dart';
 
-class HtmlContentWidget extends StatelessWidget {
+class HtmlContentWidget extends StatefulWidget {
   final String htmlContent;
   final String baseUrl;
   final List<Highlight> highlights;
   final Function(int, int, int) onCreateHighlight;
 
   const HtmlContentWidget({
-    super.key,
+    Key? key,
     required this.htmlContent,
     required this.baseUrl,
     required this.onCreateHighlight,
     this.highlights = const [],
-  });
+  }) : super(key: key);
+
+  @override
+  HtmlContentWidgetState createState() => HtmlContentWidgetState();
+}
+
+class HtmlContentWidgetState extends State<HtmlContentWidget> {
+  bool _highlightMode = false;
+
+  void toggleHighlightMode() {
+    setState(() {
+      _highlightMode = !_highlightMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final document = parse(htmlContent);
+    final document = parse(widget.htmlContent);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: _parseNodes(context, document.body!.nodes),
+      children: [
+        if (_highlightMode)
+          Container(
+            color: Colors.yellow.withOpacity(0.3),
+            padding: EdgeInsets.all(8),
+            child: Text('Highlight mode active. Select text to highlight.'),
+          ),
+        ..._parseNodes(context, document.body!.nodes),
+      ],
     );
   }
 
@@ -99,64 +118,34 @@ class HtmlContentWidget extends StatelessWidget {
     List<TextSpan> spans = [];
     int currentIndex = 0;
 
-    // Sort highlights by startIndex
-    final paragraphHighlights = highlights
-        .where((h) => h.paragraphIndex == paragraphIndex)
-        .toList()
-      ..sort((a, b) => a.startIndex.compareTo(b.startIndex));
-
-    for (var highlight in paragraphHighlights) {
-      if (highlight.startIndex > currentIndex) {
-        spans.add(_buildSelectableTextSpan(context, text.substring(currentIndex, highlight.startIndex), paragraphIndex, currentIndex));
+    for (var highlight in widget.highlights.where((h) => h.paragraphIndex == paragraphIndex)) {
+      if (currentIndex < highlight.startIndex) {
+        spans.add(TextSpan(text: text.substring(currentIndex, highlight.startIndex)));
       }
       spans.add(TextSpan(
         text: text.substring(highlight.startIndex, highlight.startIndex + highlight.length),
-        style: const TextStyle(backgroundColor: Colors.yellow),
+        style: TextStyle(backgroundColor: Colors.yellow),
       ));
       currentIndex = highlight.startIndex + highlight.length;
     }
 
     if (currentIndex < text.length) {
-      spans.add(_buildSelectableTextSpan(context, text.substring(currentIndex), paragraphIndex, currentIndex));
+      spans.add(TextSpan(text: text.substring(currentIndex)));
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: RichText(
-        text: TextSpan(
-          children: spans,
+    return GestureDetector(
+      onLongPress: () {
+        if (_highlightMode) {
+          // Handle highlight creation
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: SelectableText.rich(
+          TextSpan(children: spans),
           style: DefaultTextStyle.of(context).style,
         ),
       ),
-    );
-  }
-
-  TextSpan _buildSelectableTextSpan(BuildContext context, String text, int paragraphIndex, int startIndex) {
-    return TextSpan(
-      text: text,
-      recognizer: LongPressGestureRecognizer()
-        ..onLongPress = () {
-          final TextSelection selection = TextSelection.collapsed(offset: startIndex);
-          final RenderBox renderObject = context.findRenderObject() as RenderBox;
-          final Offset offset = renderObject.localToGlobal(Offset.zero);
-          showMenu(
-            context: context,
-            position: RelativeRect.fromLTRB(
-              offset.dx,
-              offset.dy + renderObject.size.height,
-              offset.dx + renderObject.size.width,
-              offset.dy + renderObject.size.height + 48,
-            ),
-            items: [
-              PopupMenuItem(
-                child: Text('Highlight'),
-                onTap: () {
-                  onCreateHighlight(paragraphIndex, selection.baseOffset, selection.extentOffset - selection.baseOffset);
-                },
-              ),
-            ],
-          );
-        },
     );
   }
 
@@ -193,7 +182,7 @@ class HtmlContentWidget extends StatelessWidget {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url; // Already an absolute URL
     } else {
-      return Uri.parse(baseUrl).resolve(url).toString();
+      return Uri.parse(widget.baseUrl).resolve(url).toString();
     }
   }
 }
