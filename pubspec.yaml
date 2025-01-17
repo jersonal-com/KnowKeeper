@@ -41,6 +41,7 @@ dependencies:
   html: ^0.15.5
   http: ^1.2.2
   flutter_widget_from_html: ^0.15.3
+  sembast: ^3.8.1+1
 
 dev_dependencies:
   flutter_test:

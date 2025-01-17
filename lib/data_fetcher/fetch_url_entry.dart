@@ -32,6 +32,7 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
         title: title,
         description: description,
         source: url,
+        url: url,
         date: DateTime.now(),
         imageUrl: imageUrl,
         text: textContent,
@@ -43,7 +44,9 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
     // Return a default UrlEntry in case of error
     return UrlEntry(
       title: 'Error fetching page',
+      description: '',
       source: url,
+      url: url,
       date: DateTime.now(),
       imageUrl: '',
       text: 'Failed to fetch content: $e',

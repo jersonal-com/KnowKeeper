@@ -1,23 +1,34 @@
 import 'package:enough_mail/enough_mail.dart';
-import '../data/url_database.dart';
+import '../data/url_entry.dart';
+import '../database/sembast_database.dart';
 import 'imap_config.dart';
+import 'fetch_url_entry.dart';
+import 'processor.dart';
 
-class EmailUrlProcessor {
-  final ImapConfig config;
-  final UrlDatabase urlDatabase;
+class EmailUrlProcessor implements Processor {
+  ImapConfig? _config;
+  final SembastDatabase database = SembastDatabase.instance;
 
-  EmailUrlProcessor({
-    required this.config,
-    required this.urlDatabase,
-  });
+  EmailUrlProcessor() {
+    _initConfig();
+  }
 
-  Future<void> processEmails() async {
+  Future<void> _initConfig() async {
+    _config = await ImapConfig.fromSharedPreferences();
+  }
+
+  @override
+  Future<void> process() async {
+    if (_config == null) {
+      print('IMAP configuration is not set. Skipping email processing.');
+      return;
+    }
+
     final client = ImapClient(isLogEnabled: false);
 
     try {
-      await client.connectToServer(config.server, config.port,
-          isSecure: config.isSecure);
-      await client.login(config.username, config.password);
+      await client.connectToServer(_config!.server, _config!.port, isSecure: _config!.isSecure);
+      await client.login(_config!.username, _config!.password);
 
       await client.selectInbox();
       final fetchResult = await client.fetchRecentMessages(
@@ -28,10 +39,13 @@ class EmailUrlProcessor {
         if (subject != null && subject.startsWith('RL:')) {
           final url = subject.substring(3).trim();
           if (_isValidUrl(url)) {
-            await urlDatabase.addUrl(url);
+            final urlEntry = await fetchUrlEntry(url);
+            await database.addUrlEntry(urlEntry);
           }
         }
       }
+    } catch (e) {
+      print('Error processing emails: $e');
     } finally {
       await client.logout();
     }
