@@ -55,6 +55,12 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
     );
   }
 
+  void _handleSelection(int paragraphIndex, String selectedText, int startIndex) {
+    if (selectedText.isNotEmpty) {
+      widget.onCreateHighlight(paragraphIndex, startIndex, selectedText.length);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final document = parse(widget.htmlContent);
@@ -161,6 +167,9 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
       spans.add(TextSpan(text: text.substring(currentIndex)));
     }
 
+    final paragraph = text;
+    final paragraphHighlights = widget.highlights.where((h) => h.paragraphIndex == paragraphIndex).toList();
+
     return GestureDetector(
       onLongPress: () {
         if (_highlightMode) {
@@ -172,6 +181,12 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
         child: SelectableText.rich(
           TextSpan(children: spans),
           style: DefaultTextStyle.of(context).style,
+          onSelectionChanged: (selection, cause) {
+              final selectedText = paragraph.substring(selection.start, selection.end);
+              print("Selected text: $selectedText, start: ${selection.start}, end: ${selection.end}");
+              print("Index: $paragraphIndex");
+              _handleSelection(paragraphIndex, selectedText, selection.start);
+          },
         ),
       ),
     );
@@ -191,6 +206,8 @@ class HtmlContentWidgetState extends State<HtmlContentWidget> {
     }
     return const SizedBox.shrink(); // Return an empty widget if the image is invalid
   }
+
+
   void _addImageWidget(List<Widget> widgetList, dom.Element imgElement) {
     final src = imgElement.attributes['src'];
     if (src != null &&

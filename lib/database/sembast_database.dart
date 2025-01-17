@@ -68,17 +68,14 @@ class SembastDatabase {
 
   Future<void> addOrUpdateHighlight(Highlight highlight) async {
     final db = await database;
-    final store = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
     final finder = Finder(filter: Filter.and([
       Filter.equals('url', highlight.url),
       Filter.equals('paragraphIndex', highlight.paragraphIndex),
       Filter.equals('startIndex', highlight.startIndex),
     ]));
-    await store.update(
+    await _highlightsStoreRef.add(
       db,
       highlight.toMap(),
-      finder: finder,
-      // createIfMissing: true,
     );
   }
 
@@ -128,12 +125,13 @@ class SembastDatabase {
     );
   }
 
-
   Future<List<Highlight>> getHighlightsForUrl(String url) async {
     final db = await database;
     final store = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
     final finder = Finder(filter: Filter.equals('url', url));
     final snapshots = await store.find(db, finder: finder);
+    print("Highlights: ${snapshots.map((snapshot) => Highlight.fromMap(snapshot.value))}");
     return snapshots.map((snapshot) => Highlight.fromMap(snapshot.value)).toList();
   }
+
 }

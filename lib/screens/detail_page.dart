@@ -65,9 +65,21 @@ class DetailPage extends ConsumerWidget {
                           htmlContent: urlEntry.text,
                           baseUrl: Uri.parse(urlEntry.url).origin,
                           highlights: highlights,
-                          onCreateHighlight: onCreateHighlight,
-                          onDeleteHighlight: onDeleteHighlight,
-                        ),
+                          onCreateHighlight: (paragraphIndex, startIndex, length) async {
+                            final highlight = Highlight(
+                              url: urlEntry.url,
+                              paragraphIndex: paragraphIndex,
+                              startIndex: startIndex,
+                              length: length,
+                            );
+                            await databaseOps.addOrUpdateHighlight(highlight);
+                            ref.invalidate(highlightsProvider(urlEntry.url));
+                          },
+                          onDeleteHighlight: (highlight) async {
+                            await databaseOps.deleteHighlight(highlight);
+                            ref.invalidate(highlightsProvider(urlEntry.url));
+                          },
+                        )
                       ),
                     ],
                   ),
