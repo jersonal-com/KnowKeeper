@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
 import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
@@ -136,6 +137,50 @@ class MainPageState extends ConsumerState<MainPage> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddUrlDialog,
+        tooltip: 'Add URL',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showAddUrlDialog() {
+    final urlController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add URL'),
+          content: TextField(
+            controller: urlController,
+            decoration: const InputDecoration(hintText: "Enter URL"),
+            keyboardType: TextInputType.url,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () async {
+                final url = urlController.text.trim();
+                if (url.isNotEmpty) {
+                  final urlEntry = await fetchUrlEntry(url);
+                  await ref.read(databaseProvider).addUrlEntry(urlEntry);
+                  ref.invalidate(urlEntriesProvider);
+                  if (!mounted) return;
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
