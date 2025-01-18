@@ -9,6 +9,8 @@ class UrlEntry {
   final String text;
   bool archived;
   bool deleted;
+  final bool isEmail; // New field to indicate if it's an email
+  final List<String> attachments; // New field to store attachment paths
 
   UrlEntry({
     this.id,
@@ -21,6 +23,8 @@ class UrlEntry {
     required this.text,
     this.archived = false,
     this.deleted = false,
+    this.isEmail = false,
+    this.attachments = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +38,8 @@ class UrlEntry {
       'text': text,
       'archived': archived,
       'deleted': deleted,
+      'isEmail': isEmail,
+      'attachments': attachments,
     };
   }
 
@@ -48,6 +54,8 @@ class UrlEntry {
       text: map['text'],
       archived: map['archived'] ?? false,
       deleted: map['deleted'] ?? false,
+      isEmail: map['isEmail'] ?? false,
+      attachments: List<String>.from(map['attachments'] ?? []),
     );
   }
 
@@ -63,6 +71,9 @@ class UrlEntry {
     String? text,
     bool? archived,
     bool? deleted,
+    bool? isEmail,
+    List<String>? attachments,
+
   }) {
     return UrlEntry(
       id: id ?? this.id,
@@ -75,6 +86,8 @@ class UrlEntry {
       text: text ?? this.text,
       archived: archived ?? this.archived,
       deleted: deleted ?? this.deleted,
+      isEmail: isEmail ?? this.isEmail,
+      attachments: attachments ?? this.attachments,
     );
   }
 }

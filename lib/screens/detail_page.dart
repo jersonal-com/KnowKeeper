@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:know_keeper/widgets/content_widget.dart';
 import '../data/highlight.dart';
 import '../data/highlight_mode.dart';
 import '../service/database_providers.dart';
@@ -95,12 +96,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       highlightsAsyncValue.when(
                         loading: () => const CircularProgressIndicator(),
                         error: (err, stack) => Text('Error loading highlights: $err'),
-                        data: (highlights) => HtmlContentWidget(
-                          htmlContent: urlEntry.text,
-                          baseUrl: Uri.parse(urlEntry.url).origin,
-                          highlights: highlights,
-                          highlightMode: _currentHighlightMode,
-                        ),
+                        data: (highlights) => ContentWidget(entry: urlEntry, highlights: highlights, currentHighlightMode: _currentHighlightMode),
                       ),
                     ],
                   ),
