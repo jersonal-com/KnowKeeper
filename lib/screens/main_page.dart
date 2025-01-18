@@ -44,6 +44,11 @@ class MainPageState extends ConsumerState<MainPage> {
       appBar: AppBar(
         title: const Text('Know Keeper'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshData,
+            tooltip: 'Refresh',
+          ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'config') {
