@@ -1,11 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' as htmlparser;
 import 'package:html/dom.dart' as dom;
+import 'package:path/path.dart';
 
 import '../data/highlight.dart';
 import '../data/highlight_mode.dart';
+import '../data_fetcher/email_attachment_directory.dart';
+import '../service/directory_provider.dart';
 
-class EmailContentWidget extends StatelessWidget {
+class EmailContentWidget extends ConsumerWidget {
   final String emailContent;
   final List<Highlight> highlights;
   final HighlightMode highlightMode;
@@ -18,62 +24,83 @@ class EmailContentWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final document = htmlparser.parse(emailContent);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: _processNode(document.body!, context),
+        children: _processNode(ref, document.body!, context),
       ),
     );
   }
 
-  List<Widget> _processNode(dom.Node node, BuildContext context) {
+  List<Widget> _processNode(WidgetRef ref, dom.Node node, BuildContext context) {
     List<Widget> widgets = [];
 
     for (var child in node.nodes) {
       if (child is dom.Element) {
         switch (child.localName) {
           case 'p':
-            widgets.add(_buildParagraph(child, context));
+            widgets.add(_buildParagraph(ref, child, context));
             break;
           case 'img':
-            widgets.add(_buildImage(child));
+            widgets.add(_buildImage(ref, child));
             break;
           case 'a':
-            widgets.add(_buildLink(child, context));
+            widgets.add(_buildLink(ref, child, context));
             break;
           // Add more cases for other HTML elements as needed
           default:
-            widgets.addAll(_processNode(child, context));
+            widgets.addAll(_processNode(ref, child, context));
         }
       } else if (child is dom.Text) {
-        widgets.add(_buildText(child.text, context));
+        widgets.add(_buildText(ref, child.text, context));
       }
     }
 
     return widgets;
   }
 
-  Widget _buildParagraph(dom.Element element, BuildContext context) {
+  Widget _buildParagraph(WidgetRef ref, dom.Element element, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: _processNode(element, context),
+        children: _processNode(ref, element, context),
       ),
     );
   }
 
-  Widget _buildImage(dom.Element element) {
+  Widget _buildImage(WidgetRef ref, dom.Element element) {
     final src = element.attributes['src'];
-    return src != null
-        ? Image.network(_resolveUrl(src), fit: BoxFit.contain)
-        : SizedBox.shrink();
+    if (src == null) {
+      return const SizedBox.shrink();
+    }
+
+    // External URL
+    if (src.startsWith('http')) {
+      return Image.network(src, fit: BoxFit.contain);
+    }
+
+    final dir = ref.watch(emailAttachmentDirectoryProvider);
+    final fileName = src.startsWith('cid:') ? src.substring(4) : src;
+
+    return dir.when(
+      data: (directory) {
+        final filePath = join(directory.path, sanitizeFileName(fileName));
+        final file = File(filePath);
+        if (file.existsSync()) {
+          return Image.file(file, fit: BoxFit.contain);
+        } else {
+          return Text("Attachment not found: $filePath");
+        }
+      },
+      loading: () => const CircularProgressIndicator(),
+      error: (error, stack) => Text('Error loading attachment: $error'),
+    );
   }
 
-
-  Widget _buildLink(dom.Element element, BuildContext context) {
+  Widget _buildLink(WidgetRef ref, dom.Element element, BuildContext context) {
     final href = element.attributes['href'];
     final text = element.text;
 
@@ -91,9 +118,10 @@ class EmailContentWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildText(String text, BuildContext context) {
+  Widget _buildText(WidgetRef ref, String text, BuildContext context) {
     final highlightedText = _highlightText(text);
-    return RichText(text: TextSpan(
+    return RichText(
+        text: TextSpan(
       children: highlightedText,
       style: DefaultTextStyle.of(context).style,
     ));
@@ -101,7 +129,7 @@ class EmailContentWidget extends StatelessWidget {
 
   List<TextSpan> _highlightText(String text) {
     // TODO: Implement highlighting
-      return [TextSpan(text: text)];
+    return [TextSpan(text: text)];
   }
 
   String _resolveUrl(String url) {

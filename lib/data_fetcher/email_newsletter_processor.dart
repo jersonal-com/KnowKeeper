@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:enough_mail/enough_mail.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'email_attachment_directory.dart';
 import '../database/sembast_database.dart';
 import 'imap_config.dart';
 import '../data/url_entry.dart';
@@ -55,18 +56,24 @@ class EmailNewsletterProcessor extends Processor {
     String plainTextContent = '';
     List<String> attachments = [];
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final attachmentsDir = Directory('${appDir.path}/email_attachments');
+    final attachmentsDir =  await getEmailAttachmentDirectory() ;
     if (!await attachmentsDir.exists()) {
       await attachmentsDir.create(recursive: true);
     }
 
     Future<void> processPart(MimePart part) async {
       if (part.mediaType.isImage) {
-        final fileName = part.decodeFileName() ?? 'attachment_${DateTime.now().millisecondsSinceEpoch}';
-        final filePath = '${attachmentsDir.path}/$fileName';
+//        final fileName = part.decodeFileName() ?? 'attachment_${DateTime.now().millisecondsSinceEpoch}';
+        String fileName = part.getHeader('Content-id').toString() ?? 'attachment_${DateTime.now().millisecondsSinceEpoch}';
+        if (fileName.contains('<') && fileName.contains('>')) {
+          final start = fileName.indexOf('<') + 1;
+          final end = fileName.indexOf('>');
+          fileName = fileName.substring(start, end);
+        }
+        final filePath = join(attachmentsDir.path, sanitizeFileName(fileName));
         final file = File(filePath);
         await file.writeAsBytes(part.decodeContentBinary() ?? []);
+        print("Attachment saved to $filePath");
         attachments.add(filePath);
       } else if (part.mediaType.text == 'text/plain') {
         plainTextContent += part.decodeContentText() ?? '';
