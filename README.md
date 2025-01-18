@@ -36,6 +36,7 @@ from various sources. This guide will walk you through the main features of the 
 6. [RSS Feeds](#rss-feeds)
 7. [Settings](#settings)
 8. [Export](#export)
+9. [Read it later](#read-it-later)
  
 ## Getting Started
 
@@ -106,6 +107,19 @@ Customize your Know Keeper experience:
 Under Settings there is a menu "Export" that allows you to export your highlights in Markdown format.
 Either chose the copy sign from the taskbar to copy the content or select a portion of the text and.
 copy it using the clipboard.
+
+## Read it later
+
+You can use the following simple bookmarktlet to add URLs to your knowledge base from the browser:
+
+```javascript
+javascript:(function(){
+    var email = 'your-email@example.com';
+    var subject = 'RL: ' + encodeURIComponent(window.location.href);
+    var mailtoLink = 'mailto:' + email + '?subject=' + subject;
+    window.location.href = mailtoLink;
+})();
+```
 
 ---
 
