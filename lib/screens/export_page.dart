@@ -46,7 +46,9 @@ class ExportPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: SelectableText(
                   snapshot.data ?? '',
-                  style: const TextStyle(fontFamily: 'Courier'),
+                  style:  TextStyle(fontFamily: 'Courier',
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 ),
               ),
             );

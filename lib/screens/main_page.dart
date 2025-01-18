@@ -87,15 +87,15 @@ class MainPageState extends ConsumerState<MainPage> {
                     children: [
                       SlidableAction(
                         onPressed: (context) => _archiveEntry(ref, entry),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.secondary,
+                        foregroundColor: Theme.of(context).colorScheme.onSecondary,
                         icon: Icons.archive,
                         label: 'Archive',
                       ),
                       SlidableAction(
                         onPressed: (context) => _deleteEntry(ref, entry),
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Theme.of(context).colorScheme.onError,
                         icon: Icons.delete,
                         label: 'Delete',
                       ),

@@ -32,7 +32,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
         title: const Text('Article Details'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_circle),
             onPressed: () {
               if (currentSelection != null) {
                 final highlight = Highlight(
@@ -50,7 +50,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.remove),
+            icon: const Icon(Icons.remove_circle_outlined),
             onPressed: () {
               if (currentSelection != null) {
                 highlightsAsyncValue.whenData((highlights) {
