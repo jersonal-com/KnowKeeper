@@ -39,7 +39,7 @@ class EmailNewsletterProcessor extends Processor {
       for (final message in fetchResult.messages) {
         final subject = message.decodeSubject();
         if (subject != null && ! subject.startsWith('RL:')) {
-          final urlEntry = await _processEmail(message);
+          final urlEntry = await processEmail(message);
           await database.addUrlEntry(urlEntry);
         }
       }
@@ -48,7 +48,7 @@ class EmailNewsletterProcessor extends Processor {
     }
   }
 
-  Future<UrlEntry> _processEmail(MimeMessage message) async {
+  static Future<UrlEntry> processEmail(MimeMessage message) async {
     final subject = message.decodeSubject() ?? 'No Subject';
     final from = message.from?.first.email ?? 'Unknown';
     final date = message.decodeDate() ?? DateTime.now();
@@ -89,23 +89,29 @@ class EmailNewsletterProcessor extends Processor {
     await processPart(message);
 
     final content = htmlContent.isNotEmpty ? htmlContent : plainTextContent;
-
-
-    final hashString = '$from$content';
-    final bytes = utf8.encode(hashString);
-    final hash = md5.convert(bytes);
-    final md5String = base64Encode(hash.bytes);
-
-    return UrlEntry(
-      url: 'email:$md5String',  // Using a custom scheme to identify emails
+    UrlEntry entry = UrlEntry(
+      url: 'email:',  // Using a custom scheme to identify emails
       title: subject,
       source: 'newsletter',
-      description: 'From: $from',
+      description: from,
       imageUrl: '',  // You might want to use the first image attachment as a preview
       text: content,
       date: date,
       isEmail: true,
       attachments: attachments,
     );
+
+    final hash = calculateMD5(entry);
+    entry = entry.copyWith(url: 'email:$hash');
+    return entry;
   }
+
+  static String calculateMD5(UrlEntry entry) {
+    final hashString = '${entry.description}${entry.text}';
+    final bytes = utf8.encode(hashString);
+    final hash = md5.convert(bytes);
+    final md5String = base64Encode(hash.bytes);
+    return md5String;
+  }
+
 }
