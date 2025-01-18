@@ -150,7 +150,7 @@ class MainPageState extends ConsumerState<MainPage> {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Add URL'),
           content: TextField(
@@ -162,7 +162,7 @@ class MainPageState extends ConsumerState<MainPage> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
               },
             ),
             TextButton(
@@ -170,11 +170,10 @@ class MainPageState extends ConsumerState<MainPage> {
               onPressed: () async {
                 final url = urlController.text.trim();
                 if (url.isNotEmpty) {
+                  Navigator.of(dialogContext).pop();
                   final urlEntry = await fetchUrlEntry(url);
                   await ref.read(databaseProvider).addUrlEntry(urlEntry);
                   ref.invalidate(urlEntriesProvider);
-                  if (!mounted) return;
-                  Navigator.of(context).pop();
                 }
               },
             ),
