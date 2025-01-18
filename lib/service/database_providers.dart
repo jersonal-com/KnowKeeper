@@ -16,8 +16,12 @@ class DatabaseOperations {
     return database.getNonArchivedUrlEntries();
   }
 
-  Future<void> addOrUpdateUrlEntry(UrlEntry entry) {
+  Future<void> addUrlEntry(UrlEntry entry) {
     return database.addUrlEntry(entry);
+  }
+
+  Future<void> updateUrlEntry(UrlEntry entry) {
+    return database.updateUrlEntry(entry);
   }
 
   Future<List<Highlight>> getHighlightsForUrl(String url) {

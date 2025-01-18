@@ -141,13 +141,13 @@ class MainPageState extends ConsumerState<MainPage> {
 
   void _archiveEntry(WidgetRef ref, UrlEntry entry) async {
     final updatedEntry = entry.copyWith(archived: true);
-    await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
+    await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
     ref.invalidate(urlEntriesProvider);
   }
 
   void _deleteEntry(WidgetRef ref, UrlEntry entry) async {
     final updatedEntry = entry.copyWith(archived: true, deleted: true);
-    await ref.read(databaseProvider).addOrUpdateUrlEntry(updatedEntry);
+    await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
     ref.invalidate(urlEntriesProvider);
   }
 

@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -45,7 +46,7 @@ class SembastDatabase {
 
   Future<void> addUrlEntry(UrlEntry entry) async {
     final db = await database;
-    final store = intMapStoreFactory.store(URL_STORE_NAME);
+    final store = _urlStoreRef;
 
     // Check if the entry already exists
     final finder = Finder(filter: Filter.equals('url', entry.url));
@@ -55,15 +56,15 @@ class SembastDatabase {
       // If the entry doesn't exist, add it
       await store.add(db, entry.toMap());
     } else {
-      // If the entry exists, update it
-      await store.update(db, entry.toMap(), finder: finder);
+      // We do not want to add the entry if it already exists
+      // await store.update(db, entry.toMap(), finder: finder);
     }
   }
 
   Future<void> updateUrlEntry(UrlEntry entry) async {
     final db = await database;
-    final store = intMapStoreFactory.store(URL_STORE_NAME);
-    final finder = Finder(filter: Filter.byKey(entry.url));
+    final store = _urlStoreRef;
+    final finder = Finder(filter: Filter.equals('url', entry.url));
     await store.update(db, entry.toMap(), finder: finder);
   }
 
@@ -73,6 +74,40 @@ class SembastDatabase {
       db,
       highlight.toMap(),
     );
+  }
+
+
+  Future<List<UrlEntry>> getOldDeletedEntries() async {
+    final db = await database;
+    final store = _urlStoreRef;
+    final threeMonthsAgo = DateTime.now().subtract(const Duration(days: 90));
+
+    final finder = Finder(
+      filter: Filter.and([
+        Filter.lessThan('dateAdded', threeMonthsAgo.toIso8601String()),
+        Filter.equals('deleted', true),
+      ]),
+    );
+
+    final snapshots = await store.find(db, finder: finder);
+    return snapshots.map((snapshot) {
+      final entry = UrlEntry.fromMap(snapshot.value);
+      entry.id = snapshot.key;
+      return entry;
+    }).toList();
+  }
+
+  Future<void> deleteEntries(List<UrlEntry> entries) async {
+    final db = await database;
+    final store = _urlStoreRef;
+
+    for (var entry in entries) {
+      await store.delete(
+        db,
+        finder: Finder(filter: Filter.equals('url', entry.url)),
+      );
+      debugPrint('Deleted entry: ${entry.url}');
+    }
   }
 
   Future<List<UrlEntry>> getNonArchivedUrlEntries() async {
