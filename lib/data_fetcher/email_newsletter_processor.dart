@@ -64,7 +64,7 @@ class EmailNewsletterProcessor extends Processor {
     Future<void> processPart(MimePart part) async {
       if (part.mediaType.isImage) {
 //        final fileName = part.decodeFileName() ?? 'attachment_${DateTime.now().millisecondsSinceEpoch}';
-        String fileName = part.getHeader('Content-id').toString() ?? 'attachment_${DateTime.now().millisecondsSinceEpoch}';
+        String fileName = part.getHeader('Content-id').toString();
         if (fileName.contains('<') && fileName.contains('>')) {
           final start = fileName.indexOf('<') + 1;
           final end = fileName.indexOf('>');
@@ -73,7 +73,6 @@ class EmailNewsletterProcessor extends Processor {
         final filePath = join(attachmentsDir.path, sanitizeFileName(fileName));
         final file = File(filePath);
         await file.writeAsBytes(part.decodeContentBinary() ?? []);
-        print("Attachment saved to $filePath");
         attachments.add(filePath);
       } else if (part.mediaType.text == 'text/plain') {
         plainTextContent += part.decodeContentText() ?? '';
@@ -91,7 +90,6 @@ class EmailNewsletterProcessor extends Processor {
 
     final content = htmlContent.isNotEmpty ? htmlContent : plainTextContent;
 
-    print("Message from $from with subject $subject and ID: ${message.hashCode}");
 
     final hashString = '$from$content';
     final bytes = utf8.encode(hashString);
@@ -99,7 +97,7 @@ class EmailNewsletterProcessor extends Processor {
     final md5String = base64Encode(hash.bytes);
 
     return UrlEntry(
-      url: 'email:${md5String}',  // Using a custom scheme to identify emails
+      url: 'email:$md5String',  // Using a custom scheme to identify emails
       title: subject,
       source: 'newsletter',
       description: 'From: $from',

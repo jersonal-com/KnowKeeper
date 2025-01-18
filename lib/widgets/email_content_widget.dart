@@ -18,11 +18,11 @@ class EmailContentWidget extends ConsumerWidget {
   final HighlightMode highlightMode;
 
   const EmailContentWidget({
-    Key? key,
+    super.key,
     required this.emailContent,
     required this.highlights,
     this.highlightMode = HighlightMode.none,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,14 +37,12 @@ class EmailContentWidget extends ConsumerWidget {
 
   List<Widget> _processNode(WidgetRef ref, dom.Node node, BuildContext context) {
     List<Widget> widgets = [];
-    bool foundFirstHeading = false;
     int paragraphIndex = 0;
 
     for (var child in node.nodes) {
       if (child is dom.Element && child.localName != null && ! ['header', 'script', 'style'].any((child.localName!.startsWith))) {
         if (child.localName!.startsWith('h') && child.localName!.length == 2) {
           // Handle heading tags (h1, h2, h3, etc.)
-          foundFirstHeading = true;
           widgets.add(
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -188,7 +186,6 @@ class EmailContentWidget extends ConsumerWidget {
   }
 
   Widget _buildLink(WidgetRef ref, dom.Element element, BuildContext context) {
-    final href = element.attributes['href'];
     final text = element.text;
 
     return InkWell(
@@ -197,7 +194,7 @@ class EmailContentWidget extends ConsumerWidget {
       },
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.blue,
           decoration: TextDecoration.underline,
         ),

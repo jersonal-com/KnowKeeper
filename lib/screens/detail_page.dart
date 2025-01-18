@@ -7,7 +7,6 @@ import '../data/highlight_mode.dart';
 import '../service/database_providers.dart';
 import '../service/selection_provider.dart';
 import '../service/url_providers.dart';
-import '../widgets/html_content_widget.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
   final String url;
