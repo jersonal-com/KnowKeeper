@@ -174,7 +174,7 @@ class MainPageState extends ConsumerState<MainPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailPage(url: entry.url),
+              builder: (context) => DetailPage(entry: entry),
             ),
           );
         },
