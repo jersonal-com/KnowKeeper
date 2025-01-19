@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:know_keeper/widgets/content_widget.dart';
+import 'package:know_keeper/widgets/content_switcher_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/highlight.dart';
@@ -123,7 +123,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
                         loading: () => const CircularProgressIndicator(),
                         error: (err, stack) =>
                             Text('Error loading highlights: $err'),
-                        data: (highlights) => ContentWidget(
+                        data: (highlights) => ContentSwitcherWidget(
                             entry: urlEntry,
                             highlights: highlights,
                             currentHighlightMode: _currentHighlightMode),
