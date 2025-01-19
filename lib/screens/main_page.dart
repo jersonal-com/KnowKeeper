@@ -9,7 +9,7 @@ import 'detail_page.dart';
 import 'config_page.dart';
 import 'export_page.dart'; // Add this import
 
-enum EntryFilter { all, archived, deleted }
+enum EntryFilter { all, archived, deleted, active }
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -19,7 +19,7 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class MainPageState extends ConsumerState<MainPage> {
-  EntryFilter _currentFilter = EntryFilter.all;
+  EntryFilter _currentFilter = EntryFilter.active;
 
   @override
   void initState() {
@@ -76,6 +76,8 @@ class MainPageState extends ConsumerState<MainPage> {
                   return entry.archived && !entry.deleted;
                 case EntryFilter.deleted:
                   return entry.deleted;
+                case EntryFilter.active:
+                  return !entry.archived && !entry.deleted;
               }
             }).toList();
 
@@ -198,6 +200,16 @@ class MainPageState extends ConsumerState<MainPage> {
             onTap: () {
               Navigator.pop(context);
               _showAddUrlDialog();
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Show Active'),
+            value: _currentFilter == EntryFilter.active,
+            onChanged: (bool? value) {
+              setState(() {
+                _currentFilter = EntryFilter.active;
+              });
+              Navigator.pop(context);
             },
           ),
           CheckboxListTile(
