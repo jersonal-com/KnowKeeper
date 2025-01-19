@@ -18,7 +18,7 @@ final processorsProvider = Provider<List<Processor>>((ref) {
 
 final urlEntriesProvider = FutureProvider<List<UrlEntry>>((ref) async {
   final databaseOps = ref.read(databaseProvider);
-  return await databaseOps.database.getNonArchivedUrlEntries();
+  return await databaseOps.database.getAllUrlEntries();
 });
 
 final urlEntryProvider = FutureProvider.family<UrlEntry?, String>((ref, url) async {

@@ -170,4 +170,19 @@ class SembastDatabase {
     await _urlStoreRef.drop(db);
   }
 
+  Future<List<UrlEntry>> getAllUrlEntries() async {
+    final db = await database;
+    final store = intMapStoreFactory.store(URL_STORE_NAME);
+    final finder = Finder(
+      sortOrders: [SortOrder('date', false)],
+    );
+    final snapshots = await store.find(db, finder: finder);
+    return snapshots.map((snapshot) {
+      final entry = UrlEntry.fromMap(snapshot.value);
+      entry.id = snapshot.key;
+      return entry;
+    }).toList();
+  }
+
+
 }
