@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:html/parser.dart' as html_parser;
+
 class UrlEntry {
   int? id;
   final String url;
@@ -41,6 +44,48 @@ class UrlEntry {
       'isEmail': isEmail,
       'attachments': attachments,
     };
+  }
+
+  String domain() {
+    if (isEmail) {
+      // Extract domain from email address in description
+      final emailParts = description.split('@');
+      if (emailParts.length > 1) {
+        return emailParts.last.trim();
+      }
+      return '';
+    } else {
+      // Extract domain from URL
+      try {
+        final uri = Uri.parse(url);
+        return uri.host;
+      } catch (e) {
+        debugPrint('Error parsing URL: $e');
+        return '';
+      }
+    }
+  }
+
+  int wordCount() {
+    // Parse the HTML content
+    final document = html_parser.parse(text);
+
+    // Find all <p> tags
+    final paragraphs = document.getElementsByTagName('p');
+
+    // Join the text content of all paragraphs
+    final allText = paragraphs.map((p) => p.text).join(' ');
+
+    // Split the text into words and count them
+    final words = allText.split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .length;
+
+    return words;
+  }
+
+  int duration() {
+    return wordCount() ~/ 300;
   }
 
   static UrlEntry fromMap(Map<String, dynamic> map) {

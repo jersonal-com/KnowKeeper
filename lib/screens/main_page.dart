@@ -108,25 +108,29 @@ class MainPageState extends ConsumerState<MainPage> {
                     ],
                   ),
                   child: ListTile(
-                    leading: entry.imageUrl.isNotEmpty
-                        ? SizedBox(
-                      width: imageWidth,
-                      height: imageWidth,
-                      child: Image.network(
-                        entry.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(Icons.error, size: imageWidth);
-                        },
+                    leading: SizedBox(
+                      width: imageWidth/2,
+                      child: entry.imageUrl.isNotEmpty
+                          ? CircleAvatar(
+                        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                        backgroundImage: NetworkImage(entry.imageUrl),
+                        radius: imageWidth / 2,
+                        child: entry.imageUrl.isEmpty
+                            ? Icon(Icons.error, size: imageWidth)
+                            : null,
+                      )
+                          : SizedBox(
+                        child: Icon(Icons.article, size: imageWidth * 0.4),
                       ),
-                    )
-                        : SizedBox(
-                      width: imageWidth,
-                      height: imageWidth,
-                      child: Icon(Icons.article, size: imageWidth * 0.6),
                     ),
-                    title: Text(entry.title),
-                    subtitle: Text(entry.description),
+                    title: Text(entry.title, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis,),
+                    subtitle: Row(
+                      children: [
+                        Text(entry.domain()),
+                        const Spacer(),
+                        Text('${entry.duration()} min'),
+                      ],
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
