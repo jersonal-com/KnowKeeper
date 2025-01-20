@@ -20,6 +20,14 @@ class MainPage extends ConsumerStatefulWidget {
 
 class MainPageState extends ConsumerState<MainPage> {
   EntryFilter _currentFilter = EntryFilter.active;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -49,8 +57,35 @@ class MainPageState extends ConsumerState<MainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Know Keeper'),
+        title: _isSearching
+            ? TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            hintText: 'Search...',
+            border: InputBorder.none,
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          onChanged: (value) {
+            // Trigger search here
+            _performSearch(value);
+          },
+        )
+            : const Text('Know Keeper'),
         actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _searchController.clear();
+                  // Reset search results here
+                  _performSearch('');
+                }
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshData,
@@ -329,5 +364,11 @@ class MainPageState extends ConsumerState<MainPage> {
     final updatedEntry = entry.copyWith(deleted: false);
     await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
     _refreshData();
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+        ref.read(urlSearchTermProvider.notifier).state = query;
+    });
   }
 }

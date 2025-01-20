@@ -16,9 +16,12 @@ final processorsProvider = Provider<List<Processor>>((ref) {
   ];
 });
 
+final urlSearchTermProvider = StateProvider<String>((ref) => '');
+
 final urlEntriesProvider = FutureProvider<List<UrlEntry>>((ref) async {
   final databaseOps = ref.read(databaseProvider);
-  return await databaseOps.database.getAllUrlEntries();
+  final searchTerm = ref.watch(urlSearchTermProvider);
+  return await databaseOps.database.getAllUrlEntries(searchQuery: searchTerm);
 });
 
 final urlEntryProvider = FutureProvider.family<UrlEntry?, String>((ref, url) async {

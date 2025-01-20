@@ -170,12 +170,26 @@ class SembastDatabase {
     await _urlStoreRef.drop(db);
   }
 
-  Future<List<UrlEntry>> getAllUrlEntries() async {
-    final db = await database;
+  Future<List<UrlEntry>> getAllUrlEntries({String? searchQuery}) async {
+      final db = await database;
     final store = intMapStoreFactory.store(URL_STORE_NAME);
-    final finder = Finder(
+    Finder finder = Finder(
       sortOrders: [SortOrder('date', false)],
     );
+
+    // Make case insensitive
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      final filter =
+        Filter.or([
+          Filter.matchesRegExp('title', RegExp(searchQuery, caseSensitive: false)),
+          Filter.matchesRegExp('url', RegExp(searchQuery, caseSensitive: false)),
+          Filter.matchesRegExp('text', RegExp(searchQuery, caseSensitive: false)),
+        ]);
+      finder = Finder(
+        filter: filter,
+        sortOrders: [SortOrder('date', false)],
+      );
+    }
     final snapshots = await store.find(db, finder: finder);
     return snapshots.map((snapshot) {
       final entry = UrlEntry.fromMap(snapshot.value);
