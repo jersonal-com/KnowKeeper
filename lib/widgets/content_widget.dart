@@ -82,7 +82,7 @@ class ContentWidget extends ConsumerWidget {
     }
 
     if (currentIndex < text.length) {
-      spans.add(TextSpan(text: text.substring(currentIndex)));
+      spans.add(TextSpan(text: "${text.substring(currentIndex)} "));
     }
 
     return Padding(
@@ -117,6 +117,8 @@ class ContentWidget extends ConsumerWidget {
 
     for (var child in element.nodes) {
       if (child is dom.Text) {
+        textBuffer.write(child.text);
+      } else if (child is dom.Element && child.localName == 'a') {
         textBuffer.write(child.text);
       } else if (child is dom.Element && child.localName == 'img') {
         addTextWidget(); // Add accumulated text before the image
