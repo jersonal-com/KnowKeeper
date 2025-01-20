@@ -8,6 +8,7 @@ import '../service/url_providers.dart';
 import 'detail_page.dart';
 import 'config_page.dart';
 import 'export_page.dart'; // Add this import
+import 'package:package_info_plus/package_info_plus.dart';
 
 enum EntryFilter { all, archived, deleted, active }
 
@@ -226,7 +227,7 @@ class MainPageState extends ConsumerState<MainPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: const Text('Know Keeper Menu',
+            child: const Text('Know Keeper',
                 style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
           ListTile(
@@ -237,6 +238,7 @@ class MainPageState extends ConsumerState<MainPage> {
               _showAddUrlDialog();
             },
           ),
+          const Divider(),
           CheckboxListTile(
             title: const Text('Show Active'),
             value: _currentFilter == EntryFilter.active,
@@ -277,6 +279,7 @@ class MainPageState extends ConsumerState<MainPage> {
               Navigator.pop(context);
             },
           ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
@@ -299,8 +302,45 @@ class MainPageState extends ConsumerState<MainPage> {
               );
             },
           ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.pop(context);
+              _showAboutDialog(context);
+            },
+          ),
         ],
       ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String version = packageInfo.version;
+    final String buildNumber = packageInfo.buildNumber;
+
+    showAboutDialog(
+      context: context,
+      applicationName: 'Know Keeper',
+      applicationVersion: 'Version $version+$buildNumber',
+      applicationIcon: Image.asset('assets/icon/icon.png', width: 64, height: 64),
+      children: [
+        const SizedBox(height: 24),
+        const Text('Know Keeper is an open-source knowledge management app.'),
+        const SizedBox(height: 24),
+        const Text('Third-party Licenses:'),
+        const SizedBox(height: 8),
+        TextButton(
+          child: const Text('View Licenses'),
+          onPressed: () => showLicensePage(
+            context: context,
+            applicationName: 'Know Keeper',
+            applicationVersion: 'Version $version+$buildNumber',
+          ),
+        ),
+      ],
     );
   }
 
