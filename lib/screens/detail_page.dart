@@ -34,6 +34,10 @@ class DetailPageState extends ConsumerState<DetailPage> {
       appBar: AppBar(
         title: const Text('Article Details'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.label),
+            onPressed: () => _showAddTagDialog(context, ref),
+          ),
           if (!widget.entry.isEmail) ...[
             IconButton(
               icon: const Icon(Icons.open_in_browser),
@@ -119,6 +123,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       Text(urlEntry.description,
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                      _buildTagsRow(urlEntry),
+                      const SizedBox(height: 16),
                       highlightsAsyncValue.when(
                         loading: () => const CircularProgressIndicator(),
                         error: (err, stack) =>
@@ -137,6 +144,115 @@ class DetailPageState extends ConsumerState<DetailPage> {
         },
       ),
     );
+  }
+
+
+  Widget _buildTagsRow(UrlEntry urlEntry) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 4,
+      children: [
+        ...urlEntry.tags.map((tag) => Chip(
+          label: Text(tag),
+          onDeleted: () => _removeTag(tag),
+          deleteIcon: const Icon(Icons.close, size: 18),
+        )),
+        ActionChip(
+          label: const Text('Add Tag'),
+          onPressed: () => _showAddTagDialog(context, ref),
+          avatar: const Icon(Icons.add, size: 18),
+        ),
+      ],
+    );
+  }
+
+  void _removeTag(String tagToRemove) async {
+    final updatedEntry = widget.entry.copyWith(
+      tags: widget.entry.tags.where((tag) => tag != tagToRemove).toList(),
+    );
+    await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
+    ref.invalidate(urlEntriesProvider);
+    ref.invalidate(allTagsProvider);
+    setState(() {}); // Refresh the UI
+  }
+
+
+  void _showAddTagDialog(BuildContext context, WidgetRef ref) {
+    final textController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Add Tag'),
+          content: Consumer(
+            builder: (context, ref, child) {
+              final tagsAsyncValue = ref.watch(allTagsProvider);
+              return tagsAsyncValue.when(
+                data: (allTags) {
+                  final availableTags = allTags.where((tag) => !widget.entry.tags.contains(tag)).toList();
+                  return SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (availableTags.isNotEmpty) ...[
+                          const Text('Select an existing tag:'),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            children: availableTags.map((tag) => FilterChip(
+                              label: Text(tag),
+                              onSelected: (selected) {
+                                _addTag(ref, tag);
+                                Navigator.of(dialogContext).pop();
+                              },
+                            )).toList(),
+                          ),
+                          const Divider(),
+                          const Text('Or enter a new tag:'),
+                        ],
+                        TextField(
+                          controller: textController,
+                          decoration: const InputDecoration(hintText: "Enter new tag"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                loading: () => const CircularProgressIndicator(),
+                error: (error, stack) => Text('Error: $error'),
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+            TextButton(
+              child: const Text('Add New Tag'),
+              onPressed: () {
+                final newTag = textController.text.trim();
+                if (newTag.isNotEmpty) {
+                  _addTag(ref, newTag);
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addTag(WidgetRef ref, String newTag) async {
+    final updatedEntry = widget.entry.copyWith(
+      tags: [...widget.entry.tags, newTag],
+    );
+    await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
+    ref.invalidate(urlEntriesProvider);
+    ref.invalidate(allTagsProvider);
+    setState(() {}); // Refresh the UI
   }
 
   void _launchURL(String url) async {

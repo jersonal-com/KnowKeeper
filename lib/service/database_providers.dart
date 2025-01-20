@@ -40,4 +40,8 @@ class DatabaseOperations {
     return await database.wipeDatabase();
   }
 
+  Future<List<String>> getAllTags() async {
+    return await database.getAllTags();
+  }
+
 }

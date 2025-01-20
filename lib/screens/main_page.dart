@@ -50,6 +50,8 @@ class MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     final urlEntriesAsyncValue = ref.watch(urlEntriesProvider);
+    final selectedTag = ref.watch(selectedTagProvider);
+
     final screenSize = MediaQuery.of(context).size;
     final imageWidth = (screenSize.width < screenSize.height
             ? screenSize.width
@@ -104,7 +106,7 @@ class MainPageState extends ConsumerState<MainPage> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, stack) => Center(child: Text('Error: $err')),
           data: (urlEntries) {
-            final filteredEntries = urlEntries.where((entry) {
+            List<UrlEntry> filteredEntries = urlEntries.where((entry) {
               switch (_currentFilter) {
                 case EntryFilter.all:
                   return !entry.deleted;
@@ -117,6 +119,11 @@ class MainPageState extends ConsumerState<MainPage> {
               }
             }).toList();
 
+            filteredEntries = filteredEntries.where((entry) {
+              if (selectedTag == null) return true;
+              return entry.tags.contains(selectedTag);
+            }).toList();
+
             return ListView.builder(
               itemCount: filteredEntries.length,
               itemBuilder: (context, index) {
@@ -127,13 +134,6 @@ class MainPageState extends ConsumerState<MainPage> {
           },
         ),
       ),
-/*
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddUrlDialog,
-        tooltip: 'Add URL',
-        child: const Icon(Icons.add),
-      ),
-*/
     );
   }
 
@@ -219,6 +219,8 @@ class MainPageState extends ConsumerState<MainPage> {
   }
 
   Widget _buildDrawer(BuildContext context) {
+    final selectedTag = ref.watch(selectedTagProvider);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -278,6 +280,12 @@ class MainPageState extends ConsumerState<MainPage> {
               });
               Navigator.pop(context);
             },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.label),
+            title: Text(selectedTag ?? 'Select Tag'),
+            onTap: () => _showTagSelectionDialog(context),
           ),
           const Divider(),
           ListTile(
@@ -341,6 +349,47 @@ class MainPageState extends ConsumerState<MainPage> {
           ),
         ),
       ],
+    );
+  }
+
+
+  void _showTagSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Tag'),
+          content: Consumer(
+            builder: (context, ref, child) {
+              final tagsAsyncValue = ref.watch(allTagsProvider);
+              return tagsAsyncValue.when(
+                data: (tags) => SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      ListTile(
+                        title: const Text('All'),
+                        onTap: () {
+                          ref.read(selectedTagProvider.notifier).state = null;
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      ...tags.map((tag) => ListTile(
+                        title: Text(tag),
+                        onTap: () {
+                          ref.read(selectedTagProvider.notifier).state = tag;
+                          Navigator.of(context).pop();
+                        },
+                      )),
+                    ],
+                  ),
+                ),
+                loading: () => const CircularProgressIndicator(),
+                error: (error, stack) => Text('Error: $error'),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

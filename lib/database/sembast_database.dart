@@ -198,5 +198,19 @@ class SembastDatabase {
     }).toList();
   }
 
+  Future<List<String>> getAllTags() async {
+    final db = await database;
+    final store = intMapStoreFactory.store(URL_STORE_NAME);
+
+    final snapshots = await store.find(db);
+    Set<String> tags = {};
+
+    for (var snapshot in snapshots) {
+      final entry = UrlEntry.fromMap(snapshot.value);
+      tags.addAll(entry.tags);
+    }
+
+    return tags.toList()..sort();
+  }
 
 }

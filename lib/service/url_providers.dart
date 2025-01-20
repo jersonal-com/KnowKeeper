@@ -33,3 +33,10 @@ final highlightsProvider = FutureProvider.family<List<Highlight>, String>((ref, 
   final databaseOps = ref.read(databaseProvider);
   return await databaseOps.getHighlightsForUrl(url);
 });
+
+final allTagsProvider = FutureProvider<List<String>>((ref) async {
+  final databaseOps = ref.read(databaseProvider);
+  return await databaseOps.getAllTags();
+});
+
+final selectedTagProvider = StateProvider<String?>((ref) => null);
