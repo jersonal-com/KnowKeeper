@@ -55,7 +55,8 @@ configuration screen. You can reach the configuration screen from the menu in th
 ## Home Screen
 
 The home screen displays your recent entries and provides quick access to all main features of the 
-app.
+app. When you open the app for the first time this screen will be empty as you have to add URLs, 
+RSS feeds or emails to your knowledge base.
 
 You can pull the screen down to update the list and you can swipe left to either archive or delete 
 an entry.
@@ -65,23 +66,32 @@ and the data stays on your phone.
 
 Deleted entries will be removed after some time to free up space.
 
+With the menu you can filter for deleted or archived entries and unarchive / undelete them.
+
 <img src="screen_shots/main_page.png" width="200">
 
 
 ## Tagging and Filtering Content
 
+KnowKepper has a tagging system. You can add tags to your entries and filter for them.
 
-<img src="screen_shots/select_tag.png" width="200">
+1. Tap on an entry to view its full content.
+2. The existing tags are shown at the top of the screen.
+3. Tap on the 'Add Tags' button add a tag.
+4. Either select an existing tag or create a new one.
 
+On the home screen you can use the menu to only see entries with a specific tag. For that 
+just select the tag from the menu.
 
 <img src="screen_shots/main_page_menu.png" width="200">
+<img src="screen_shots/select_tag.png" width="200">
 
 
 ## Adding Content
 
 Know Keeper supports multiple ways to add content:
 
-1. **Manual Entry**: Tap the '+' button and choose 'Manual Entry' to add a new note or URL manually.
+1. **Manual Entry**: Tap the '+ Add URL' entry in the menu to add a new note or URL manually.
 2. **RSS Import**: Add a new RSS feed URL in the RSS Feeds section of the configuration page.
 3. **Read It Later Integration**: The app automatically processes emails from configured accounts.
    When the subject contains "RL: ", followed by a URL, the app adds the URL to your knowledge base. 
@@ -96,6 +106,8 @@ Know Keeper supports multiple ways to add content:
 - Tap on any entry to view its full content.
 - Use the toolbar in the viewing screen to add a highlight by marking text and pressing the plus sign.
 - Use the toolbar to remove a highlight by selecting text that is part of a highlight and pressing the minus sign.
+- You can also open the original page in a web browser by tapping the link icon.
+- By selecting the share icon you can share the entry to your friends.
 
 <img src="screen_shots/detail_page.png" width="200">
 
@@ -122,7 +134,8 @@ Manage your RSS feed subscriptions:
 Customize your Know Keeper experience:
 
 - **Theme**: Choose between light and dark modes.
-- ... more to come ...
+
+<img src="screen_shots/dark_mode.png" width="200">
 
 ## Export
 
