@@ -123,6 +123,8 @@ class ContentWidget extends ConsumerWidget {
       } else if (child is dom.Element && child.localName == 'img') {
         addTextWidget(); // Add accumulated text before the image
         paragraphWidgets.add(buildImageWidget(child));
+      } else {
+        textBuffer.write(child.text);
       }
     }
 

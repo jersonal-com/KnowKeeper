@@ -1,4 +1,4 @@
-![Know Keeper](assets/icon/icon.png)
+<img src="assets/icon/icon.png" width="200">
 
 # Know Keeper
 
@@ -49,6 +49,8 @@ When you first open Know Keeper, you should enter the details of your email acco
 configuration screen. You can reach the configuration screen from the menu in the top right corner.
 
 ## Home Screen
+
+
 
 The home screen displays your recent entries and provides quick access to all main features of the 
 app.
