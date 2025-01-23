@@ -30,13 +30,14 @@ from various sources. This guide will walk you through the main features of the 
 ## Table of Contents
 1. [Getting Started](#getting-started)
 2. [Home Screen](#home-screen)
-3. [Adding Content](#adding-content)
-4. [Viewing and Managing Content](#viewing-and-managing-content)
-5. [Email Integration](#email-integration)
-6. [RSS Feeds](#rss-feeds)
-7. [Settings](#settings)
-8. [Export](#export)
-9. [Read it later](#read-it-later)
+3. [Tagging and Filtering Content](#tagging-and-filtering-content)
+4. [Adding Content](#adding-content)
+5. [Viewing and Managing Content](#viewing-and-managing-content)
+6. [Email Integration](#email-integration)
+7. [RSS Feeds](#rss-feeds)
+8. [Settings](#settings)
+9. [Export](#export)
+10. [Read it later](#read-it-later)
  
 ## Getting Started
 
@@ -46,11 +47,12 @@ your personal emails will be displayed between the news. Ideally get an email fr
 provider like google or setup a separate email for know keeper.
 
 When you first open Know Keeper, you should enter the details of your email account in the 
-configuration screen. You can reach the configuration screen from the menu in the top right corner.
+configuration screen. You can reach the configuration screen from the menu in the top left corner.
+
+<img src="screen_shots/configuration_page.png" width="200">
+
 
 ## Home Screen
-
-
 
 The home screen displays your recent entries and provides quick access to all main features of the 
 app.
@@ -63,6 +65,18 @@ and the data stays on your phone.
 
 Deleted entries will be removed after some time to free up space.
 
+<img src="screen_shots/main_page.png" width="200">
+
+
+## Tagging and Filtering Content
+
+
+<img src="screen_shots/select_tag.png" width="200">
+
+
+<img src="screen_shots/main_page_menu.png" width="200">
+
+
 ## Adding Content
 
 Know Keeper supports multiple ways to add content:
@@ -74,11 +88,17 @@ Know Keeper supports multiple ways to add content:
 4. **Newsletter**: All emails that are not processed by Read It Later will be added as a newsletter.
    This means the content itself is processed and added to the knowledge base.
 
+<img src="screen_shots/main_page_menu.png" width="200">
+
+
 ## Viewing and Managing Content
 
 - Tap on any entry to view its full content.
 - Use the toolbar in the viewing screen to add a highlight by marking text and pressing the plus sign.
 - Use the toolbar to remove a highlight by selecting text that is part of a highlight and pressing the minus sign.
+
+<img src="screen_shots/detail_page.png" width="200">
+
 
 ## Email Integration
 
@@ -109,6 +129,8 @@ Customize your Know Keeper experience:
 Under Settings there is a menu "Export" that allows you to export your highlights in Markdown format.
 Either chose the copy sign from the taskbar to copy the content or select a portion of the text and.
 copy it using the clipboard.
+
+<img src="screen_shots/export_screen.png" width="200">
 
 ## Read it later
 
