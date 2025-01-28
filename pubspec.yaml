@@ -1,4 +1,5 @@
-name: know_keeper
+name: Know Keeper
+author: "Oliver Bossert"
 description: "An open source knowledge and read it late app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.5.0+1
@@ -96,6 +97,7 @@ flutter:
 flutter_icons:
   android: "launcher_icon"
   adaptive_icon_background: "#04396D"
+  adaptive_icon_foreground: "assets/icon/icon.png"
   ios: true
   image_path: "assets/icon/icon.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
