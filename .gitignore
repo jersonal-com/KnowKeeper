@@ -41,3 +41,17 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/knowkeeper*.json
+
+# Keystore files
+*.jks
+*.keystore
+
+# Fastlane match files
+/android/fastlane/match
+/android/fastlane/report.xml
+/android/fastlane/Preview.html
+/android/fastlane/screenshots
+/android/fastlane/test_output
+/android/fastlane/README.md
+/android/fastlane/.env

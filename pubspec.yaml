@@ -1,8 +1,7 @@
-name: Know Keeper
-author: "Oliver Bossert"
+name: know_keeper
 description: "An open source knowledge and read it late app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 0.5.0+1
+version: 0.5.1+7
 license: GPL-3.0-or-later
 
 environment:
@@ -94,8 +93,9 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
 
-flutter_icons:
+flutter_launcher_icons:
   android: "launcher_icon"
+  android_name: "Know Keeper"
   adaptive_icon_background: "#04396D"
   adaptive_icon_foreground: "assets/icon/icon.png"
   ios: true

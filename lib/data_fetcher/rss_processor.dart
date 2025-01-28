@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:http/http.dart' as http;
-import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
+import '../data_fetcher/fetch_url_entry.dart';
 import 'package:rss_dart/dart_rss.dart';
 import 'package:rss_dart/util/helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';

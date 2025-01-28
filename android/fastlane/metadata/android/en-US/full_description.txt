@@ -1,0 +1,3 @@
+Know Keeper is an open source app that combines a read-it-later service with a RSS reader and a newsletter reader. I created this app as a replacement for Omnivore after they shut down their service. 
+
+Know Keeper does not need a backend cloud service - you only need an email account that is dedicated to Knwo Keeper where all the information is stored in a safe and privacy-friendly way.
