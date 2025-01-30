@@ -18,9 +18,9 @@ The key features I wanted from this app are:
 
 Know keeper has been a quick hack to get something working and I hope you find it useful.
 
-Please be aware that this is work in progress and an early alpha version. I don't know if I am 
+**Please be aware that this is work in progress and an early alpha version. I don't know if I am 
 going to add features but if I do so it might break the existing database and you might lose your
-data. Feel free to test it and let me know if you find any bugs.
+data. Feel free to test it and let me know if you find any bugs.**
 
 # Know Keeper User Manual
 

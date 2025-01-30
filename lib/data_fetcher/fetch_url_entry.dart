@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 
 import '../data/url_entry.dart';
+import 'dart:convert';
 
 Future<UrlEntry> fetchUrlEntry(String url) async {
   try {
@@ -10,8 +11,20 @@ Future<UrlEntry> fetchUrlEntry(String url) async {
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
+
+      // Fix encoding
+      Encoding encoding = utf8;
+      final contentType = response.headers['content-type'];
+      if (contentType != null) {
+        final charsetMatch = RegExp(r'charset=([\w-]+)').firstMatch(contentType);
+        if (charsetMatch != null) {
+          encoding = Encoding.getByName(charsetMatch.group(1)!) ?? utf8;
+        }
+      }
+      final decodedBody = encoding.decode(response.bodyBytes);
+
       // Parse the HTML content
-      final document = parse(response.body);
+      final document = parse(decodedBody);
 
       // Extract title
       final title = document.querySelector('title')?.text.trim() ?? '';

@@ -38,7 +38,7 @@ class ContentWidget extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
-                node.text,
+                node.text.trim(),
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
@@ -92,11 +92,12 @@ class ContentWidget extends ConsumerWidget {
         style: DefaultTextStyle.of(context).style,
         onSelectionChanged: (selection, cause) {
           if (selection.baseOffset != selection.extentOffset) {
+            final selectionEnd = (selection.end - 1) < text.length ? (selection.end - 1) : text.length;
             ref.read(currentSelectionProvider.notifier).state = Selection(
               paragraphIndex: paragraphIndex,
               startIndex: selection.start,
               length: selection.end - selection.start,
-              text: text.substring(selection.start, selection.end),
+              text: text.substring(selection.start, selectionEnd),
             );
           }
         },
@@ -109,8 +110,9 @@ class ContentWidget extends ConsumerWidget {
     StringBuffer textBuffer = StringBuffer();
 
     void addTextWidget() {
-      if (textBuffer.isNotEmpty) {
-        paragraphWidgets.add(buildHighlightedParagraph(context, ref, textBuffer.toString(), paragraphIndex));
+      if (textBuffer.isNotEmpty && !RegExp(r'^[\u200B\s]*$').hasMatch(textBuffer.toString())) {
+        debugPrint("<<${textBuffer.toString().trim()}>>");
+        paragraphWidgets.add(buildHighlightedParagraph(context, ref, textBuffer.toString().trim(), paragraphIndex));
         textBuffer.clear();
       }
     }
