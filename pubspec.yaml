@@ -1,7 +1,7 @@
 name: know_keeper
 description: "An open source knowledge and read it late app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 0.5.3+10
+version: 0.5.3+12
 license: GPL-3.0-or-later
 
 environment:
