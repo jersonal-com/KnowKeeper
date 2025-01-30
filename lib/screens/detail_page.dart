@@ -26,7 +26,8 @@ class DetailPageState extends ConsumerState<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final urlEntryAsyncValue = ref.watch(urlEntryProvider(widget.entry.url));
-    final highlightsAsyncValue = ref.watch(highlightsProvider(widget.entry.url));
+    final highlightsAsyncValue =
+        ref.watch(highlightsProvider(widget.entry.url));
     final databaseOps = ref.read(databaseProvider);
     final currentSelection = ref.watch(currentSelectionProvider);
 
@@ -117,10 +118,13 @@ class DetailPageState extends ConsumerState<DetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(urlEntry.title,
-                          style: Theme.of(context).textTheme.titleSmall),
+                      (urlEntry.description.isNotEmpty)
+                          ? Text(urlEntry.description,
+                              style: Theme.of(context).textTheme.titleSmall)
+                          : Text(Uri.parse(urlEntry.url).origin,
+                              style: Theme.of(context).textTheme.titleSmall),
                       const SizedBox(height: 8),
-                      Text(urlEntry.description,
+                      Text(urlEntry.title,
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 16),
                       const SizedBox(height: 16),
@@ -146,17 +150,16 @@ class DetailPageState extends ConsumerState<DetailPage> {
     );
   }
 
-
   Widget _buildTagsRow(UrlEntry urlEntry) {
     return Wrap(
       spacing: 8,
       runSpacing: 4,
       children: [
         ...urlEntry.tags.map((tag) => Chip(
-          label: Text(tag),
-          onDeleted: () => _removeTag(tag),
-          deleteIcon: const Icon(Icons.close, size: 18),
-        )),
+              label: Text(tag),
+              onDeleted: () => _removeTag(tag),
+              deleteIcon: const Icon(Icons.close, size: 18),
+            )),
         ActionChip(
           label: const Text('Add Tag'),
           onPressed: () => _showAddTagDialog(context, ref),
@@ -176,7 +179,6 @@ class DetailPageState extends ConsumerState<DetailPage> {
     setState(() {}); // Refresh the UI
   }
 
-
   void _showAddTagDialog(BuildContext context, WidgetRef ref) {
     final textController = TextEditingController();
 
@@ -190,7 +192,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
               final tagsAsyncValue = ref.watch(allTagsProvider);
               return tagsAsyncValue.when(
                 data: (allTags) {
-                  final availableTags = allTags.where((tag) => !widget.entry.tags.contains(tag)).toList();
+                  final availableTags = allTags
+                      .where((tag) => !widget.entry.tags.contains(tag))
+                      .toList();
                   return SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -200,20 +204,23 @@ class DetailPageState extends ConsumerState<DetailPage> {
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
-                            children: availableTags.map((tag) => FilterChip(
-                              label: Text(tag),
-                              onSelected: (selected) {
-                                _addTag(ref, tag);
-                                Navigator.of(dialogContext).pop();
-                              },
-                            )).toList(),
+                            children: availableTags
+                                .map((tag) => FilterChip(
+                                      label: Text(tag),
+                                      onSelected: (selected) {
+                                        _addTag(ref, tag);
+                                        Navigator.of(dialogContext).pop();
+                                      },
+                                    ))
+                                .toList(),
                           ),
                           const Divider(),
                           const Text('Or enter a new tag:'),
                         ],
                         TextField(
                           controller: textController,
-                          decoration: const InputDecoration(hintText: "Enter new tag"),
+                          decoration:
+                              const InputDecoration(hintText: "Enter new tag"),
                         ),
                       ],
                     ),
@@ -272,5 +279,4 @@ class DetailPageState extends ConsumerState<DetailPage> {
     Navigator.of(context).pop(); // Return to the main page
     await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
   }
-
 }
