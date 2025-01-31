@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../service/theme_provider.dart';
+import 'advanced_settings_page.dart';
 
 class ConfigPage extends ConsumerStatefulWidget {
   const ConfigPage({super.key});
@@ -213,6 +214,18 @@ class ConfigPageState extends ConsumerState<ConfigPage> {
                     ElevatedButton(
                       onPressed: _saveData,
                       child: const Text('Save Configuration'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AdvancedSettingsPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
+                      child: const Text("Advanced Settings"),
                     ),
                   ],
                 ),

@@ -76,6 +76,24 @@ class SembastDatabase {
     );
   }
 
+  Future<List<UrlEntry>> getAllDeletedEntries() async {
+    final db = await database;
+    final store = _urlStoreRef;
+
+    final finder = Finder(
+      filter: Filter.and([
+        Filter.equals('deleted', true),
+      ]),
+    );
+
+    final snapshots = await store.find(db, finder: finder);
+    return snapshots.map((snapshot) {
+      final entry = UrlEntry.fromMap(snapshot.value);
+      entry.id = snapshot.key;
+      return entry;
+    }).toList();
+  }
+
 
   Future<List<UrlEntry>> getOldDeletedEntries() async {
     final db = await database;

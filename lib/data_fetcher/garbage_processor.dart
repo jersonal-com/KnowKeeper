@@ -16,8 +16,8 @@ class GarbageProcessor extends Processor {
   GarbageProcessor();
 
   @override
-  Future<void> process() async {
-    if (!await _shouldRun()) {
+  Future<void> process({bool force = false}) async {
+    if (!force && !await _shouldRun()) {
       debugPrint('GarbageProcessor: Already ran today. Skipping.');
       return;
     }
@@ -25,7 +25,7 @@ class GarbageProcessor extends Processor {
     debugPrint('GarbageProcessor: Starting garbage collection...');
 
     // Get old deleted entries
-    final oldDeletedEntries = await database.getOldDeletedEntries();
+    final oldDeletedEntries = (force) ? await database.getAllDeletedEntries() : await database.getOldDeletedEntries();
 
     // Delete attachments
     await _deleteAttachments(oldDeletedEntries);

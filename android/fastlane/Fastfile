@@ -26,13 +26,16 @@ platform :android do
   desc "Submit a new Internal Build to Google Play Store"
   lane :internal do
     increment_version()
+    sh("flutter build appbundle --release")
     gradle(task: "clean bundleRelease")
     upload_to_play_store(
         track: 'internal',
         release_status: "draft",
-        skip_upload_metadata: true,
-        skip_upload_images: true,
-        skip_upload_changelogs: true,
+        aab: '../build/app/outputs/bundle/release/app-release.aab',
+        skip_upload_apk: true,
+        skip_upload_metadata: false,
+        skip_upload_images: false,
+        skip_upload_changelogs: false,
     )
   end
 
