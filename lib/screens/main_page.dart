@@ -5,6 +5,7 @@ import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
 import 'package:know_keeper/widgets/tag_color_dot.dart';
 import 'package:know_keeper/widgets/tag_text.dart';
 import '../data/url_entry.dart';
+import '../main.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
 import 'detail_page.dart';
@@ -334,6 +335,9 @@ class MainPageState extends ConsumerState<MainPage> {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final String version = packageInfo.version;
     final String buildNumber = packageInfo.buildNumber;
+
+    final context = navigatorKey.currentContext;
+    if (context == null || !context.mounted) return;
 
     showAboutDialog(
       context: context,

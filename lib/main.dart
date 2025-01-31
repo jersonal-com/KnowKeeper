@@ -22,6 +22,8 @@ import 'package:know_keeper/service/theme_provider.dart';
 import 'screens/main_page.dart';
 import 'theme/app_theme.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() {
   runApp(
     const ProviderScope(
@@ -39,6 +41,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       title: 'Know Keeper',
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
