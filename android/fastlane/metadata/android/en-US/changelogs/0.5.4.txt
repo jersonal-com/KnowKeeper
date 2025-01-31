@@ -1,2 +1,4 @@
 * Improved deployment
-* Possibility to force garbage collection (advanced settings)
+* Added option to delete all marked items (advanced settings)
+* Added small colored dots to indicate tags (color not configurable at the moment)
+* Fixed bug that caused tags to not show up on the detail page

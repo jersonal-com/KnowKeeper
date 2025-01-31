@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data_fetcher/garbage_processor.dart';
 
 class AdvancedSettingsPage extends ConsumerWidget {
-  const AdvancedSettingsPage({Key? key}) : super(key: key);
+  const AdvancedSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

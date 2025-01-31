@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
+import 'package:know_keeper/widgets/tag_color_dot.dart';
+import 'package:know_keeper/widgets/tag_text.dart';
 import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
@@ -202,6 +204,10 @@ class MainPageState extends ConsumerState<MainPage> {
         subtitle: Row(
           children: [
             Text(entry.domain()),
+            const SizedBox(width: 8),
+            Row(
+              spacing: 6,
+              children: entry.tags.map((tag) => TagColorDot(tag: tag, radius: 7,)).toList(),),
             const Spacer(),
             Text('${entry.duration()} min'),
           ],
@@ -284,7 +290,7 @@ class MainPageState extends ConsumerState<MainPage> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.label),
-            title: Text(selectedTag ?? 'Select Tag'),
+            title: (selectedTag != null) ? TagText(selectedTag) : const Text('Select Tag'),
             onTap: () => _showTagSelectionDialog(context),
           ),
           const Divider(),
@@ -374,7 +380,7 @@ class MainPageState extends ConsumerState<MainPage> {
                         },
                       ),
                       ...tags.map((tag) => ListTile(
-                        title: Text(tag),
+                        title: TagText(tag),
                         onTap: () {
                           ref.read(selectedTagProvider.notifier).state = tag;
                           Navigator.of(context).pop();

@@ -10,6 +10,7 @@ import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/selection_provider.dart';
 import '../service/url_providers.dart';
+import '../widgets/tag_color_dot.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
   final UrlEntry entry;
@@ -156,6 +157,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
       runSpacing: 4,
       children: [
         ...urlEntry.tags.map((tag) => Chip(
+              avatar: TagColorDot(tag: tag),
               label: Text(tag),
               onDeleted: () => _removeTag(tag),
               deleteIcon: const Icon(Icons.close, size: 18),
@@ -176,6 +178,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
     await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
     ref.invalidate(urlEntriesProvider);
     ref.invalidate(allTagsProvider);
+    ref.invalidate(urlEntryProvider);
     setState(() {}); // Refresh the UI
   }
 
@@ -259,14 +262,15 @@ class DetailPageState extends ConsumerState<DetailPage> {
     await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
     ref.invalidate(urlEntriesProvider);
     ref.invalidate(allTagsProvider);
-    setState(() {}); // Refresh the UI
+    ref.invalidate(urlEntryProvider);
+    setState(() {});
   }
 
   void _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
+    try {
       await launchUrl(Uri.parse(url));
-    } else {
-      debugPrint('Could not launch $url');
+    } catch (e) {
+      debugPrint('Could not launch $url: $e');
     }
   }
 
