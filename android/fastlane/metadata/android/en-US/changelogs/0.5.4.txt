@@ -1,1 +1,2 @@
 * Improved deployment
+* Possibility to force garbage collection (advanced settings)
