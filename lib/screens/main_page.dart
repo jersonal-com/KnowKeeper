@@ -13,6 +13,8 @@ import 'config_page.dart';
 import 'export_page.dart'; // Add this import
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'tag_management_page.dart';
+
 enum EntryFilter { all, archived, deleted, active }
 
 class MainPage extends ConsumerStatefulWidget {
@@ -290,9 +292,20 @@ class MainPageState extends ConsumerState<MainPage> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.label),
+            leading: const Icon(Icons.sell),
             title: (selectedTag != null) ? TagText(selectedTag) : const Text('Select Tag'),
             onTap: () => _showTagSelectionDialog(context),
+          ),
+          ListTile(
+            leading: const Icon(Icons.label),
+            title: const Text('Tag Management'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TagManagementPage()),
+              );
+            },
           ),
           const Divider(),
           ListTile(

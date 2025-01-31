@@ -1,0 +1,1 @@
+* Tag management and tag color picker added

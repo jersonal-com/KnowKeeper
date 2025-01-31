@@ -1,18 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:know_keeper/service/url_providers.dart';
 
-class TagColorDot extends StatelessWidget {
+import '../service/database_providers.dart';
+
+class TagColorDot extends ConsumerWidget {
   final String tag;
   final double radius;
 
-  const TagColorDot({required this.tag, this.radius = 6, super.key} );
+  const TagColorDot({required this.tag, this.radius = 6, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tagColors = ref.watch(tagColorsProvider);
+
     return Container(
       width: radius,
       height: radius,
       decoration: BoxDecoration(
-        color: hashToColor(stringToHash(tag)),
+        color: tagColors.when(
+            data: (data) {
+              final color = data[tag];
+              if (color != null) {
+                return color;
+              } else {
+                final hash = stringToHash(tag);
+                final newColor = hashToColor(hash);
+                ref.read(databaseProvider).setTagColor(tag, hash);
+                return newColor;
+              }
+            },
+            error: (_, __) => Colors.amber,
+            loading: () => hashToColor(stringToHash(tag))),
         borderRadius: BorderRadius.circular(radius),
       ),
     );

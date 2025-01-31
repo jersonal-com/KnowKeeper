@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:know_keeper/data_fetcher/email_newsletter_processor.dart';
 import 'package:know_keeper/data_fetcher/rss_processor.dart';
@@ -40,3 +41,8 @@ final allTagsProvider = FutureProvider<List<String>>((ref) async {
 });
 
 final selectedTagProvider = StateProvider<String?>((ref) => null);
+
+final tagColorsProvider = FutureProvider<Map<String, Color>>((ref) async {
+  final databaseOps = ref.read(databaseProvider);
+  return await databaseOps.getAllTagColors();
+});

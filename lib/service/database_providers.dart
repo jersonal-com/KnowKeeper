@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/url_entry.dart';
 import '../database/sembast_database.dart';
@@ -42,6 +43,22 @@ class DatabaseOperations {
 
   Future<List<String>> getAllTags() async {
     return await database.getAllTags();
+  }
+
+  Future<void> renameTag(String oldTag, String newTag) async {
+    await database.renameTag(oldTag, newTag);
+  }
+
+  Future<void> deleteTag(String tag) async {
+    await database.deleteTag(tag);
+  }
+
+  Future<void> setTagColor(String tag, int colorValue) async {
+    await database.setTagColor(tag, colorValue);
+  }
+
+  Future<Map<String, Color>> getAllTagColors() async {
+    return await database.getAllTagColors();
   }
 
 }

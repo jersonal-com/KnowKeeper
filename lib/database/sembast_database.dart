@@ -13,6 +13,8 @@ class SembastDatabase {
   static const String DB_NAME = 'know_keeper.db';
   static const String URL_STORE_NAME = 'url_entries';
   static const String HIGHLIGHT_STORE_NAME = 'highlights';
+  static const String TAG_STORE_NAME = 'tags';
+  final _tagStoreRef = stringMapStoreFactory.store(TAG_STORE_NAME);
   final _highlightsStoreRef = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
   final _urlStoreRef = intMapStoreFactory.store(URL_STORE_NAME);
 
@@ -94,7 +96,6 @@ class SembastDatabase {
     }).toList();
   }
 
-
   Future<List<UrlEntry>> getOldDeletedEntries() async {
     final db = await database;
     final store = _urlStoreRef;
@@ -159,13 +160,12 @@ class SembastDatabase {
   Future<void> deleteHighlight(Highlight highlight) async {
     // Create a finder to locate the specific highlight
     final finder = Finder(
-      filter: Filter.and([
-        Filter.equals('url', highlight.url),
-        Filter.equals('paragraphIndex', highlight.paragraphIndex),
-        Filter.equals('startIndex', highlight.startIndex),
-        Filter.equals('length', highlight.length),
-      ])
-    );
+        filter: Filter.and([
+      Filter.equals('url', highlight.url),
+      Filter.equals('paragraphIndex', highlight.paragraphIndex),
+      Filter.equals('startIndex', highlight.startIndex),
+      Filter.equals('length', highlight.length),
+    ]));
 
     // Delete the record from the database
     await _highlightsStoreRef.delete(
@@ -179,7 +179,9 @@ class SembastDatabase {
     final store = intMapStoreFactory.store(HIGHLIGHT_STORE_NAME);
     final finder = Finder(filter: Filter.equals('url', url));
     final snapshots = await store.find(db, finder: finder);
-    return snapshots.map((snapshot) => Highlight.fromMap(snapshot.value)).toList();
+    return snapshots
+        .map((snapshot) => Highlight.fromMap(snapshot.value))
+        .toList();
   }
 
   Future<void> wipeDatabase() async {
@@ -189,7 +191,7 @@ class SembastDatabase {
   }
 
   Future<List<UrlEntry>> getAllUrlEntries({String? searchQuery}) async {
-      final db = await database;
+    final db = await database;
     final store = intMapStoreFactory.store(URL_STORE_NAME);
     Finder finder = Finder(
       sortOrders: [SortOrder('date', false)],
@@ -197,12 +199,12 @@ class SembastDatabase {
 
     // Make case insensitive
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      final filter =
-        Filter.or([
-          Filter.matchesRegExp('title', RegExp(searchQuery, caseSensitive: false)),
-          Filter.matchesRegExp('url', RegExp(searchQuery, caseSensitive: false)),
-          Filter.matchesRegExp('text', RegExp(searchQuery, caseSensitive: false)),
-        ]);
+      final filter = Filter.or([
+        Filter.matchesRegExp(
+            'title', RegExp(searchQuery, caseSensitive: false)),
+        Filter.matchesRegExp('url', RegExp(searchQuery, caseSensitive: false)),
+        Filter.matchesRegExp('text', RegExp(searchQuery, caseSensitive: false)),
+      ]);
       finder = Finder(
         filter: filter,
         sortOrders: [SortOrder('date', false)],
@@ -231,4 +233,69 @@ class SembastDatabase {
     return tags.toList()..sort();
   }
 
+  Future<void> renameTag(String oldTag, String newTag) async {
+    final db = await database;
+    final store = intMapStoreFactory.store(URL_STORE_NAME);
+
+    final finder = Finder(
+        filter: Filter.custom(
+            (record) => (record['tags'] as List<dynamic>).contains(oldTag)));
+
+    final records = await store.find(db, finder: finder);
+
+    for (var record in records) {
+      final tags = List<String>.from(record['tags'] as List<dynamic>);
+      final index = tags.indexOf(oldTag);
+      if (index != -1) {
+        tags[index] = newTag;
+        await store.update(
+          db,
+          {'tags': tags},
+          finder: Finder(filter: Filter.byKey(record.key)),
+        );
+      }
+    }
+
+    // Update tag color
+    final oldTagRecord = await _tagStoreRef.record(oldTag).get(db);
+    if (oldTagRecord != null) {
+      await _tagStoreRef.record(newTag).put(db, oldTagRecord);
+      await _tagStoreRef.record(oldTag).delete(db);
+    }
+  }
+
+  Future<void> deleteTag(String tag) async {
+    final db = await database;
+    final store = intMapStoreFactory.store(URL_STORE_NAME);
+
+    final finder = Finder(
+        filter: Filter.custom(
+            (record) => (record['tags'] as List<dynamic>).contains(tag)));
+
+    final records = await store.find(db, finder: finder);
+
+    for (var record in records) {
+      final tags = List<String>.from(record['tags'] as List<dynamic>);
+      tags.remove(tag);
+      await store.update(
+        db,
+        {'tags': tags},
+        finder: Finder(filter: Filter.byKey(record.key)),
+      );
+    }
+    await _tagStoreRef.record(tag).delete(db);
+  }
+
+  Future<void> setTagColor(String tag, int colorValue) async {
+    final db = await database;
+    await _tagStoreRef.record(tag).put(db, {'color': colorValue});
+  }
+
+  Future<Map<String, Color>> getAllTagColors() async {
+    final db = await database;
+    final records = await _tagStoreRef.find(db);
+
+    return Map.fromEntries(records.map(
+            (record) => MapEntry(record.key, Color(record.value['color'] as int))));
+  }
 }
