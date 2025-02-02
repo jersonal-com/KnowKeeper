@@ -23,6 +23,7 @@ class ContentSwitcherWidget extends StatelessWidget {
       return EmailContentWidget(
         content: entry.text,
         baseUrl: entry.description,
+        entry: entry,
         highlights: highlights,
         highlightMode: currentHighlightMode,
       );
@@ -30,6 +31,7 @@ class ContentSwitcherWidget extends StatelessWidget {
       return HtmlContentWidget(
         content: entry.text,
         baseUrl: Uri.parse(entry.url).origin,
+        entry: entry,
         highlights: highlights,
         highlightMode: currentHighlightMode,
       );

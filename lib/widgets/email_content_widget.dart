@@ -16,6 +16,7 @@ class EmailContentWidget extends ContentWidget {
     super.key,
     required super.content,
     required super.baseUrl,
+    required super.entry,
     super.highlights,
     super.highlightMode,
   });

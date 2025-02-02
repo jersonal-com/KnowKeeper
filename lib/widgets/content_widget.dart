@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:know_keeper/data/url_entry.dart';
 import '../data/highlight.dart';
 import '../data/highlight_mode.dart';
 import '../service/selection_provider.dart';
@@ -8,6 +9,7 @@ import '../service/selection_provider.dart';
 class ContentWidget extends ConsumerWidget {
   final String content;
   final String baseUrl;
+  final UrlEntry entry;
   final List<Highlight> highlights;
   final HighlightMode highlightMode;
 
@@ -15,6 +17,7 @@ class ContentWidget extends ConsumerWidget {
     super.key,
     required this.content,
     required this.baseUrl,
+    required this.entry,
     this.highlights = const [],
     this.highlightMode = HighlightMode.none,
   });
@@ -142,7 +145,7 @@ class ContentWidget extends ConsumerWidget {
         textBuffer.write(child.text);
       } else if (child is dom.Element && child.localName == 'img') {
         addTextWidget(); // Add accumulated text before the image
-        paragraphWidgets.add(buildImageWidget(child));
+        paragraphWidgets.add(buildImage(ref, child));
       } else {
         textBuffer.write(child.text);
       }
@@ -153,32 +156,16 @@ class ContentWidget extends ConsumerWidget {
     return paragraphWidgets;
   }
 
-  Widget buildImageWidget(dom.Element imgElement) {
-    String? src = imgElement.attributes['src'];
-    src ??= imgElement.attributes['data-orig-file'];
-    if (src != null &&
-        src.startsWith('http') &&
-        ['png', 'jpg', 'jpeg'].any((ext) => src!.endsWith(ext))) {
-      final imageUrl = resolveUrl(src);
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Image.network(imageUrl),
-      );
-    }
-    return const SizedBox
-        .shrink(); // Return an empty widget if the image is invalid
-  }
-
   String resolveUrl(String url) {
     return url;
   }
 
   Widget buildImage(WidgetRef ref, dom.Element imgElement) {
-    print(imgElement.attributes);
     String? src = imgElement.attributes['src'];
     src ??= imgElement.attributes['data-orig-file'];
     if (src != null &&
         src.startsWith('http') &&
+        src != entry.imageUrl &&
         ['png', 'jpg', 'jpeg'].any((ext) => src!.contains(ext))) {
       final imageUrl = resolveUrl(src);
       return Padding(
@@ -188,4 +175,5 @@ class ContentWidget extends ConsumerWidget {
     }
     return const SizedBox.shrink();
   }
+
 }
