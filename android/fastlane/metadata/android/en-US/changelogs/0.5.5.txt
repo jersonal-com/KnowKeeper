@@ -1,1 +1,2 @@
 * Tag management and tag color picker added
+* Fixed bug when highlighting an entire paragraph
