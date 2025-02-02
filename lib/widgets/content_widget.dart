@@ -24,13 +24,16 @@ class ContentWidget extends ConsumerWidget {
     return const Placeholder();
   }
 
-  List<Widget> processNode(BuildContext context, WidgetRef ref, List<dom.Node> nodes) {
+  List<Widget> processNode(
+      BuildContext context, WidgetRef ref, List<dom.Node> nodes) {
     List<Widget> widgets = [];
     bool foundFirstHeading = false;
     int paragraphIndex = 0;
 
     void parseNode(dom.Node node, bool foundFirstHeading) {
-      if (node is dom.Element && node.localName != null && ! ['header', 'script', 'style'].any((node.localName!.startsWith))) {
+      if (node is dom.Element &&
+          node.localName != null &&
+          !['header', 'script', 'style'].any((node.localName!.startsWith))) {
         if (node.localName!.startsWith('h') && node.localName!.length == 2) {
           // Handle heading tags (h1, h2, h3, etc.)
           foundFirstHeading = true;
@@ -39,7 +42,8 @@ class ContentWidget extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
                 node.text.trim(),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
           );
@@ -48,7 +52,8 @@ class ContentWidget extends ConsumerWidget {
           widgets.add(buildImage(ref, node));
         } else if (node.localName == 'p') {
           // Handle paragraph tags
-          widgets.addAll(parseParagraphContent(context, ref, node, paragraphIndex));
+          widgets.addAll(
+              parseParagraphContent(context, ref, node, paragraphIndex));
           paragraphIndex++;
         } else {
           // Recursively parse child nodes
@@ -66,22 +71,30 @@ class ContentWidget extends ConsumerWidget {
     return widgets;
   }
 
-  Widget buildHighlightedParagraph(BuildContext context, WidgetRef ref, String text, int paragraphIndex) {
+  Widget buildHighlightedParagraph(
+      BuildContext context, WidgetRef ref, String text, int paragraphIndex) {
     List<TextSpan> spans = [];
     int currentIndex = 0;
 
-    for (var highlight in highlights.where((h) => h.paragraphIndex == paragraphIndex)) {
+    for (var highlight
+        in highlights.where((h) => h.paragraphIndex == paragraphIndex)) {
       if (currentIndex < highlight.startIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, highlight.startIndex)));
+        spans.add(
+            TextSpan(text: text.substring(currentIndex, highlight.startIndex)));
+      }
+      int highlightEnd = highlight.length + highlight.startIndex;
+      if (highlightEnd >= text.length) {
+        highlightEnd = text.length-1;
       }
       spans.add(TextSpan(
-        text: text.substring(highlight.startIndex, highlight.startIndex + highlight.length),
+        text: text.substring(
+            highlight.startIndex, highlightEnd),
         style: const TextStyle(backgroundColor: Colors.yellow),
       ));
-      currentIndex = highlight.startIndex + highlight.length;
+      currentIndex = highlightEnd;
     }
 
-    if (currentIndex < text.length) {
+    if (currentIndex <= text.length) {
       spans.add(TextSpan(text: "${text.substring(currentIndex)} "));
     }
 
@@ -92,7 +105,9 @@ class ContentWidget extends ConsumerWidget {
         style: DefaultTextStyle.of(context).style,
         onSelectionChanged: (selection, cause) {
           if (selection.baseOffset != selection.extentOffset) {
-            final selectionEnd = (selection.end - 1) < text.length ? (selection.end - 1) : text.length;
+            final selectionEnd = (selection.end - 1) < text.length
+                ? (selection.end - 1)
+                : text.length;
             ref.read(currentSelectionProvider.notifier).state = Selection(
               paragraphIndex: paragraphIndex,
               startIndex: selection.start,
@@ -105,14 +120,17 @@ class ContentWidget extends ConsumerWidget {
     );
   }
 
-  List<Widget> parseParagraphContent(BuildContext context, WidgetRef ref, dom.Element element, int paragraphIndex) {
+  List<Widget> parseParagraphContent(BuildContext context, WidgetRef ref,
+      dom.Element element, int paragraphIndex) {
     List<Widget> paragraphWidgets = [];
     StringBuffer textBuffer = StringBuffer();
 
     void addTextWidget() {
-      if (textBuffer.isNotEmpty && !RegExp(r'^[\u200B\s]*$').hasMatch(textBuffer.toString())) {
+      if (textBuffer.isNotEmpty &&
+          !RegExp(r'^[\u200B\s]*$').hasMatch(textBuffer.toString())) {
         debugPrint("<<${textBuffer.toString().trim()}>>");
-        paragraphWidgets.add(buildHighlightedParagraph(context, ref, textBuffer.toString().trim(), paragraphIndex));
+        paragraphWidgets.add(buildHighlightedParagraph(
+            context, ref, textBuffer.toString().trim(), paragraphIndex));
         textBuffer.clear();
       }
     }
@@ -135,7 +153,6 @@ class ContentWidget extends ConsumerWidget {
     return paragraphWidgets;
   }
 
-
   Widget buildImageWidget(dom.Element imgElement) {
     final src = imgElement.attributes['src'];
     if (src != null &&
@@ -147,7 +164,8 @@ class ContentWidget extends ConsumerWidget {
         child: Image.network(imageUrl),
       );
     }
-    return const SizedBox.shrink(); // Return an empty widget if the image is invalid
+    return const SizedBox
+        .shrink(); // Return an empty widget if the image is invalid
   }
 
   String resolveUrl(String url) {
@@ -160,13 +178,11 @@ class ContentWidget extends ConsumerWidget {
         src.startsWith('http') &&
         ['png', 'jpg', 'jpeg'].any((ext) => src.endsWith(ext))) {
       final imageUrl = resolveUrl(src);
-      return
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Image.network(imageUrl),
-        );
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Image.network(imageUrl),
+      );
     }
     return const SizedBox.shrink();
   }
-
 }
