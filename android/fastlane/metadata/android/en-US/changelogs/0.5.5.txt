@@ -1,2 +1,3 @@
 * Tag management and tag color picker added
 * Fixed bug when highlighting an entire paragraph
+* Adding images from the data-orig-file attribute

@@ -128,7 +128,7 @@ class ContentWidget extends ConsumerWidget {
     void addTextWidget() {
       if (textBuffer.isNotEmpty &&
           !RegExp(r'^[\u200B\s]*$').hasMatch(textBuffer.toString())) {
-        debugPrint("<<${textBuffer.toString().trim()}>>");
+        //debugPrint("<<${textBuffer.toString().trim()}>>");
         paragraphWidgets.add(buildHighlightedParagraph(
             context, ref, textBuffer.toString().trim(), paragraphIndex));
         textBuffer.clear();
@@ -154,10 +154,11 @@ class ContentWidget extends ConsumerWidget {
   }
 
   Widget buildImageWidget(dom.Element imgElement) {
-    final src = imgElement.attributes['src'];
+    String? src = imgElement.attributes['src'];
+    src ??= imgElement.attributes['data-orig-file'];
     if (src != null &&
         src.startsWith('http') &&
-        ['png', 'jpg', 'jpeg'].any((ext) => src.endsWith(ext))) {
+        ['png', 'jpg', 'jpeg'].any((ext) => src!.endsWith(ext))) {
       final imageUrl = resolveUrl(src);
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -173,10 +174,12 @@ class ContentWidget extends ConsumerWidget {
   }
 
   Widget buildImage(WidgetRef ref, dom.Element imgElement) {
-    final src = imgElement.attributes['src'];
+    print(imgElement.attributes);
+    String? src = imgElement.attributes['src'];
+    src ??= imgElement.attributes['data-orig-file'];
     if (src != null &&
         src.startsWith('http') &&
-        ['png', 'jpg', 'jpeg'].any((ext) => src.endsWith(ext))) {
+        ['png', 'jpg', 'jpeg'].any((ext) => src!.contains(ext))) {
       final imageUrl = resolveUrl(src);
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
