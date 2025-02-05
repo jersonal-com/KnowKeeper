@@ -23,7 +23,7 @@ going to add features but if I do so it might break the existing database and yo
 data. Feel free to test it and let me know if you find any bugs.**
 
 The app is currently in a closed alpha test phase in the Google Play store. If you want to join
-the testbed, please join this [Google Group}(https://groups.google.com/g/know-keeper-usergroup). 
+the testbed, please join this [Google Group](https://groups.google.com/g/know-keeper-usergroup). 
 
 
 # Know Keeper User Manual
