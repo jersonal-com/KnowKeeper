@@ -24,7 +24,8 @@ class ImapConfig {
     final username = prefs.getString('email');
     final password = prefs.getString('password');
 
-    if (server != null && port != null && isSecure != null && username != null && password != null) {
+    if (server != null && port != null && isSecure != null && username != null && password != null &&
+        server.isNotEmpty && port > 0 && username.isNotEmpty && password.isNotEmpty ) {
       return ImapConfig(
         server: server,
         port: port,

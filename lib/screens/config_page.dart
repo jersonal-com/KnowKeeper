@@ -140,37 +140,20 @@ class ConfigPageState extends ConsumerState<ConfigPage> {
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(labelText: 'Email'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter an email';
-                        return null;
-                      },
                     ),
                     TextFormField(
                       controller: _passwordController,
                       decoration: const InputDecoration(labelText: 'Password'),
                       obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter a password';
-                        return null;
-                      },
                     ),
                     TextFormField(
                       controller: _imapServerController,
                       decoration: const InputDecoration(labelText: 'IMAP Server'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter an IMAP server';
-                        return null;
-                      },
                     ),
                     TextFormField(
                       controller: _imapPortController,
                       decoration: const InputDecoration(labelText: 'IMAP Port'),
                       keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter an IMAP port';
-                        if (int.tryParse(value) == null) return 'Please enter a valid number';
-                        return null;
-                      },
                     ),
                     SwitchListTile(
                       title: const Text('IMAP Secure'),
