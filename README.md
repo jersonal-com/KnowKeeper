@@ -22,6 +22,10 @@ Know keeper has been a quick hack to get something working and I hope you find i
 going to add features but if I do so it might break the existing database and you might lose your
 data. Feel free to test it and let me know if you find any bugs.**
 
+The app is currently in a closed alpha test phase in the Google Play store. If you want to join
+the testbed, please join this [Google Group](https://groups.google.com/g/know-keeper-usergroup). 
+
+
 # Know Keeper User Manual
 
 Know Keeper is an open source knowledge management app that helps you organize and access information 
