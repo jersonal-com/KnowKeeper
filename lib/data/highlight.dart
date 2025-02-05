@@ -1,6 +1,9 @@
-class Highlight {
+import 'paragraph_element.dart';
+
+class Highlight implements ParagraphElement {
   final String url;
   final int paragraphIndex;
+  @override
   final int startIndex;
   final int length;
   final String text;
@@ -10,8 +13,11 @@ class Highlight {
     required this.paragraphIndex,
     required this.startIndex,
     required this.length,
-    required this.text
+    required this.text,
   });
+
+  @override
+  int get endIndex => startIndex + length;
 
   Map<String, dynamic> toMap() {
     return {

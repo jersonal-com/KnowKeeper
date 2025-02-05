@@ -1,12 +1,19 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:know_keeper/data/url_entry.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/highlight.dart';
 import '../data/highlight_mode.dart';
+import '../data/link_info.dart';
 import '../service/selection_provider.dart';
 
-class ContentWidget extends ConsumerWidget {
+
+class ContentWidget extends ConsumerStatefulWidget {
   final String content;
   final String baseUrl;
   final UrlEntry entry;
@@ -23,7 +30,13 @@ class ContentWidget extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ContentWidgetState createState() => ContentWidgetState();
+}
+
+class ContentWidgetState extends ConsumerState<ContentWidget> {
+  
+  @override
+  Widget build(BuildContext context) {
     return const Placeholder();
   }
 
@@ -74,31 +87,64 @@ class ContentWidget extends ConsumerWidget {
     return widgets;
   }
 
+  static Timer? _debounce;
+  final Map<String, GestureRecognizer> _gestureRecognizers = {};
+
+    @override
+  void dispose() {
+    _gestureRecognizers.forEach((key, recognizer) => recognizer.dispose());
+    super.dispose();
+  }
+
+  GestureRecognizer _getOrCreateLinkRecognizer(String url) {
+    return _gestureRecognizers.putIfAbsent(
+      url,
+      () => TapGestureRecognizer()..onTap = () {
+        launchUrl(Uri.parse(url));
+      },
+    );
+  }
+
   Widget buildHighlightedParagraph(
-      BuildContext context, WidgetRef ref, String text, int paragraphIndex) {
+      BuildContext context,
+      WidgetRef ref,
+      String text,
+      int paragraphIndex,
+      List<LinkInfo> links,
+      ) {
     List<TextSpan> spans = [];
     int currentIndex = 0;
 
-    for (var highlight
-        in highlights.where((h) => h.paragraphIndex == paragraphIndex)) {
-      if (currentIndex < highlight.startIndex) {
-        spans.add(
-            TextSpan(text: text.substring(currentIndex, highlight.startIndex)));
+    // Sort highlights and links by their start index
+    final allElements = [
+      ...widget.highlights.where((h) => h.paragraphIndex == paragraphIndex),
+      ...links,
+    ]..sort((a, b) => a.startIndex.compareTo(b.startIndex));
+
+    for (var element in allElements) {
+      if (currentIndex < element.startIndex) {
+        spans.add(TextSpan(text: text.substring(currentIndex, element.startIndex)));
       }
-      int highlightEnd = highlight.length + highlight.startIndex;
-      if (highlightEnd >= text.length) {
-        highlightEnd = text.length-1;
+
+      if (element is Highlight) {
+        int highlightEnd = min(element.startIndex + element.length, text.length);
+        spans.add(TextSpan(
+          text: text.substring(element.startIndex, highlightEnd),
+          style: const TextStyle(backgroundColor: Colors.yellow),
+        ));
+        currentIndex = highlightEnd;
+      } else if (element is LinkInfo) {
+        spans.add(TextSpan(
+          text: text.substring(element.startIndex, element.endIndex),
+          style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+          recognizer: _getOrCreateLinkRecognizer(element.url),
+        ));
+        currentIndex = element.endIndex + (element.endIndex - element.startIndex);
       }
-      spans.add(TextSpan(
-        text: text.substring(
-            highlight.startIndex, highlightEnd),
-        style: const TextStyle(backgroundColor: Colors.yellow),
-      ));
-      currentIndex = highlightEnd;
     }
 
-    if (currentIndex <= text.length) {
-      spans.add(TextSpan(text: "${text.substring(currentIndex)} "));
+    if (currentIndex < text.length) {
+      spans.add(TextSpan(text: text.substring(currentIndex)));
     }
 
     return Padding(
@@ -108,16 +154,16 @@ class ContentWidget extends ConsumerWidget {
         style: DefaultTextStyle.of(context).style,
         onSelectionChanged: (selection, cause) {
           if (selection.baseOffset != selection.extentOffset) {
-            final selectionEnd = (selection.end - 1) < text.length
-                ? (selection.end - 1)
-                : text.length;
-            ref.read(currentSelectionProvider.notifier).state = Selection(
-              paragraphIndex: paragraphIndex,
-              startIndex: selection.start,
-              length: selection.end - selection.start,
-              text: text.substring(selection.start, selectionEnd),
-            );
-          }
+            if (_debounce?.isActive ?? false) _debounce!.cancel();
+            _debounce = Timer(const Duration(milliseconds: 200), () {
+              final selectionEnd = min(selection.end - 1, text.length);
+              ref.read(currentSelectionProvider.notifier).state = Selection(
+                paragraphIndex: paragraphIndex,
+                startIndex: selection.start,
+                length: selection.end - selection.start,
+                text: text.substring(selection.start, selectionEnd),
+              );
+            });          }
         },
       ),
     );
@@ -127,14 +173,16 @@ class ContentWidget extends ConsumerWidget {
       dom.Element element, int paragraphIndex) {
     List<Widget> paragraphWidgets = [];
     StringBuffer textBuffer = StringBuffer();
+    List<LinkInfo> links = [];
 
     void addTextWidget() {
       if (textBuffer.isNotEmpty &&
           !RegExp(r'^[\u200B\s]*$').hasMatch(textBuffer.toString())) {
         //debugPrint("<<${textBuffer.toString().trim()}>>");
         paragraphWidgets.add(buildHighlightedParagraph(
-            context, ref, textBuffer.toString().trim(), paragraphIndex));
+            context, ref, textBuffer.toString().trim(), paragraphIndex, links));
         textBuffer.clear();
+        links.clear();
       }
     }
 
@@ -142,6 +190,14 @@ class ContentWidget extends ConsumerWidget {
       if (child is dom.Text) {
         textBuffer.write(child.text);
       } else if (child is dom.Element && child.localName == 'a') {
+        final linkText = child.text;
+        final url = child.attributes['href'] ?? '';
+        links.add(LinkInfo(
+          startIndex: textBuffer.length,
+          endIndex: textBuffer.length + linkText.length,
+          url: url,
+        ));
+        textBuffer.write(linkText);
         textBuffer.write(child.text);
       } else if (child is dom.Element && child.localName == 'img') {
         addTextWidget(); // Add accumulated text before the image
@@ -165,7 +221,7 @@ class ContentWidget extends ConsumerWidget {
     src ??= imgElement.attributes['data-orig-file'];
     if (src != null &&
         src.startsWith('http') &&
-        src != entry.imageUrl &&
+        src != widget.entry.imageUrl &&
         ['png', 'jpg', 'jpeg'].any((ext) => src!.contains(ext))) {
       final imageUrl = resolveUrl(src);
       return Padding(

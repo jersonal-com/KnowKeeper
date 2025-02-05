@@ -25,12 +25,23 @@ platform :android do
 
   desc "Submit a new Internal Build to Google Play Store"
   lane :internal do
-    increment_version()
-    sh("flutter build appbundle --release")
-    gradle(task: "clean bundleRelease")
+    build_flutter()
     upload_to_play_store(
         track: 'internal',
         release_status: "draft",
+        aab: '../build/app/outputs/bundle/release/app-release.aab',
+        skip_upload_apk: true,
+        skip_upload_metadata: false,
+        skip_upload_images: false,
+        skip_upload_changelogs: false,
+    )
+  end
+
+  desc "Submit a new alpha Version to Google Play Store"
+  lane :alpha do
+    build_flutter()
+    upload_to_play_store(
+        track: 'alpha',
         aab: '../build/app/outputs/bundle/release/app-release.aab',
         skip_upload_apk: true,
         skip_upload_metadata: false,
@@ -50,6 +61,14 @@ platform :android do
   lane :deploy do
     gradle(task: "clean assembleRelease")
     upload_to_play_store
+  end
+
+
+  desc "Deploy a new version to the Google Play"
+  lane :build_flutter do
+    increment_version()
+    sh("flutter build appbundle --release")
+    gradle(task: "clean bundleRelease")
   end
 
   desc "Increment the version in pubspec.yaml"
