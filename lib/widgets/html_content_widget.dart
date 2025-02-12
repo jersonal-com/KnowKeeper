@@ -14,20 +14,13 @@ import '../data/url_entry.dart';
 class HtmlContentWidget extends ContentWidget {
 
   const HtmlContentWidget({
-    Key? key,
-    required String content,
-    required String baseUrl,
-    required UrlEntry entry,
-    List<Highlight> highlights = const [],
-    HighlightMode highlightMode = HighlightMode.none,
-  }) : super(
-    key: key,
-    content: content,
-    baseUrl: baseUrl,
-    entry: entry,
-    highlights: highlights,
-    highlightMode: highlightMode,
-  );
+    super.key,
+    required super.content,
+    required super.baseUrl,
+    required super.entry,
+    super.highlights,
+    super.highlightMode,
+  });
 
   @override
   HtmlContentWidgetState createState() => HtmlContentWidgetState();

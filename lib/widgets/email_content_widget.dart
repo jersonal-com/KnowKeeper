@@ -7,29 +7,19 @@ import 'package:html/dom.dart' as dom;
 import 'package:know_keeper/widgets/content_widget.dart';
 import 'package:path/path.dart';
 
-import '../data/highlight.dart';
-import '../data/highlight_mode.dart';
-import '../data/url_entry.dart';
 import '../data_fetcher/email_attachment_directory.dart';
 import '../service/directory_provider.dart';
 
 class EmailContentWidget extends ContentWidget {
 
   const EmailContentWidget({
-    Key? key,
-    required String content,
-    required String baseUrl,
-    required UrlEntry entry,
-    List<Highlight> highlights = const [],
-    HighlightMode highlightMode = HighlightMode.none,
-  }) : super(
-          key: key,
-          content: content,
-          baseUrl: baseUrl,
-          entry: entry,
-          highlights: highlights,
-          highlightMode: highlightMode,
-        );
+    super.key,
+    required super.content,
+    required super.baseUrl,
+    required super.entry,
+    super.highlights,
+    super.highlightMode,
+  });
 
   @override
   EmailContentWidgetState createState() => EmailContentWidgetState();

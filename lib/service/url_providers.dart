@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:know_keeper/data_fetcher/auto_tag_processor.dart';
 import 'package:know_keeper/data_fetcher/email_newsletter_processor.dart';
 import 'package:know_keeper/data_fetcher/rss_processor.dart';
 import '../data_fetcher/processor.dart';
@@ -12,8 +13,8 @@ final processorsProvider = Provider<List<Processor>>((ref) {
   return [
     EmailUrlProcessor(),
     RssProcessor(),
-    EmailNewsletterProcessor()
-    // Add other processors here in the future
+    EmailNewsletterProcessor(),
+    AutoTagProcessor(),
   ];
 });
 

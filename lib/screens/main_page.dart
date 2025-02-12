@@ -13,6 +13,7 @@ import 'config_page.dart';
 import 'export_page.dart'; // Add this import
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'tag_automation_page.dart';
 import 'tag_management_page.dart';
 
 enum EntryFilter { all, archived, deleted, active }
@@ -304,6 +305,16 @@ class MainPageState extends ConsumerState<MainPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const TagManagementPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome),
+            title: const Text('Tag Automation'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TagAutomationPage()),
               );
             },
           ),

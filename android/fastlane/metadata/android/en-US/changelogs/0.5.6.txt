@@ -1,3 +1,4 @@
 * Added Clickable links in detail pages (still WIP and interferes with highlights).
 * Removed validation for email address so that the app can be used as RSS reader only
 * Added delete and archive buttons to detail page
+* Automatic tagging of entries

@@ -12,6 +12,7 @@ class UrlEntry {
   final String text;
   bool archived;
   bool deleted;
+  bool autoTagged;
   final bool isEmail; // New field to indicate if it's an email
   final List<String> attachments; // New field to store attachment paths
   final List<String> tags;
@@ -28,6 +29,7 @@ class UrlEntry {
     this.archived = false,
     this.deleted = false,
     this.isEmail = false,
+    this.autoTagged = false,
     this.attachments = const [],
     this.tags = const [],
   });
@@ -43,6 +45,7 @@ class UrlEntry {
       'text': text,
       'archived': archived,
       'deleted': deleted,
+      'autoTagged': autoTagged,
       'isEmail': isEmail,
       'attachments': attachments,
       'tags': tags
@@ -103,6 +106,7 @@ class UrlEntry {
       archived: map['archived'] ?? false,
       deleted: map['deleted'] ?? false,
       isEmail: map['isEmail'] ?? false,
+      autoTagged: map['autoTagged'] ?? false,
       attachments: List<String>.from(map['attachments'] ?? []),
       tags: List<String>.from(map['tags'] ?? []),
     );
@@ -121,6 +125,7 @@ class UrlEntry {
     bool? archived,
     bool? deleted,
     bool? isEmail,
+    bool? autoTagged,
     List<String>? attachments,
     List<String>? tags
 
@@ -137,6 +142,7 @@ class UrlEntry {
       archived: archived ?? this.archived,
       deleted: deleted ?? this.deleted,
       isEmail: isEmail ?? this.isEmail,
+      autoTagged: autoTagged ?? this.autoTagged,
       attachments: attachments ?? this.attachments,
       tags: tags ?? this.tags
     );
