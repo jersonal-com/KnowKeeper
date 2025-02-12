@@ -1,7 +1,8 @@
 import 'package:html/dom.dart';
 
 final ignoreElementsDivId = [
-  'comments', 'right-sidebar-inner', 'related-posts', 'adsbygoogle'
+  'comments', 'right-sidebar-inner', 'related-posts', 'adsbygoogle', 'sidebar',
+  'subscription-nudge',
 ];
 
 final ignoreElementsClass = [
