@@ -37,8 +37,14 @@ class DetailPageState extends ConsumerState<DetailPage> {
         title: const Text('Article Details'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.label),
-            onPressed: () => _showAddTagDialog(context, ref),
+            icon: const Icon(Icons.archive),
+            onPressed: () => _archiveEntry(ref),
+            tooltip: 'Archive',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _deleteEntry(ref),
+            tooltip: 'Delete',
           ),
           if (!widget.entry.isEmail) ...[
             IconButton(
@@ -282,5 +288,13 @@ class DetailPageState extends ConsumerState<DetailPage> {
     final updatedEntry = widget.entry.copyWith(archived: true);
     Navigator.of(context).pop(); // Return to the main page
     await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
+    ref.invalidate(urlEntriesProvider);
+  }
+
+  void _deleteEntry(WidgetRef ref) async {
+    final updatedEntry = widget.entry.copyWith(deleted: true);
+    Navigator.of(context).pop(); // Return to the main page
+    await ref.read(databaseProvider).updateUrlEntry(updatedEntry);
+    ref.invalidate(urlEntriesProvider);
   }
 }
