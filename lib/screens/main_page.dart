@@ -78,18 +78,18 @@ class MainPageState extends ConsumerState<MainPage> {
       appBar: MyAppBar(
         title: _isSearching
             ? TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Search...',
-            border: InputBorder.none,
-            filled: true,
-            fillColor: Colors.white,
-          ),
-          onChanged: (value) {
-            // Trigger search here
-            _performSearch(value);
-          },
-        )
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  border: InputBorder.none,
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                onChanged: (value) {
+                  // Trigger search here
+                  _performSearch(value);
+                },
+              )
             : const Text('Know Keeper'),
         actions: [
           IconButton(
@@ -199,28 +199,40 @@ class MainPageState extends ConsumerState<MainPage> {
       ),
       child: ListTile(
         leading: SizedBox(
-        width: imageWidth / 2,
-        child: Consumer(
-          builder: (context, ref, child) {
-            final faviconUrl = ref.watch(faviconProvider(entry.fullDomain()));
-            return faviconUrl.when(
-              data: (url) {
-                if (url != null) {
-                  return CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
-                    backgroundImage: NetworkImage(url),
-                    radius: imageWidth / 2,
-                  );
-                } else {
-                  return Icon(Icons.article, size: imageWidth * 0.4);
-                }
-              },
-              loading: () => const CircularProgressIndicator(),
-              error: (_, __) => Icon(Icons.article, size: imageWidth * 0.4),
-            );
-          },
+          width: imageWidth / 2,
+          child: entry.imageUrl.isNotEmpty
+              ? CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                  backgroundImage: NetworkImage(entry.imageUrl),
+                  radius: imageWidth / 2,
+                  child: entry.imageUrl.isEmpty
+                      ? Icon(Icons.error, size: imageWidth)
+                      : null,
+                )
+              : Consumer(
+                  builder: (context, ref, child) {
+                    final faviconUrl =
+                        ref.watch(faviconProvider(entry.fullDomain()));
+                    return faviconUrl.when(
+                      data: (url) {
+                        if (url != null) {
+                          return CircleAvatar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                            backgroundImage: NetworkImage(url),
+                            radius: imageWidth / 2,
+                          );
+                        } else {
+                          return Icon(Icons.article, size: imageWidth * 0.4);
+                        }
+                      },
+                      loading: () => const CircularProgressIndicator(),
+                      error: (_, __) =>
+                          Icon(Icons.article, size: imageWidth * 0.4),
+                    );
+                  },
+                ),
         ),
-      ),
         title: Text(
           entry.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -233,7 +245,13 @@ class MainPageState extends ConsumerState<MainPage> {
             const SizedBox(width: 8),
             Row(
               spacing: 6,
-              children: entry.tags.map((tag) => TagColorDot(tag: tag, radius: 7,)).toList(),),
+              children: entry.tags
+                  .map((tag) => TagColorDot(
+                        tag: tag,
+                        radius: 7,
+                      ))
+                  .toList(),
+            ),
             const Spacer(),
             Text('${entry.duration()} min'),
           ],
@@ -269,11 +287,10 @@ class MainPageState extends ConsumerState<MainPage> {
               ),
             ),
             child: Center(
-              child: Image.asset(
-                'assets/icon/icon.png',
-                width: 80,
-              )
-            ),
+                child: Image.asset(
+              'assets/icon/icon.png',
+              width: 80,
+            )),
           ),
           ListTile(
             leading: const Icon(Icons.add),
@@ -327,7 +344,9 @@ class MainPageState extends ConsumerState<MainPage> {
           const Divider(),
           ListTile(
             leading: const Icon(Icons.sell),
-            title: (selectedTag != null) ? TagText(selectedTag) : const Text('Select Tag'),
+            title: (selectedTag != null)
+                ? TagText(selectedTag)
+                : const Text('Select Tag'),
             onTap: () => _showTagSelectionDialog(context),
           ),
           ListTile(
@@ -337,7 +356,8 @@ class MainPageState extends ConsumerState<MainPage> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TagManagementPage()),
+                MaterialPageRoute(
+                    builder: (context) => const TagManagementPage()),
               );
             },
           ),
@@ -347,7 +367,8 @@ class MainPageState extends ConsumerState<MainPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TagAutomationPage()),
+                MaterialPageRoute(
+                    builder: (context) => const TagAutomationPage()),
               );
             },
           ),
@@ -400,7 +421,8 @@ class MainPageState extends ConsumerState<MainPage> {
       context: context,
       applicationName: 'Know Keeper',
       applicationVersion: 'Version $version+$buildNumber',
-      applicationIcon: Image.asset('assets/icon/icon.png', width: 64, height: 64),
+      applicationIcon:
+          Image.asset('assets/icon/icon.png', width: 64, height: 64),
       children: [
         const SizedBox(height: 24),
         const Text('Know Keeper is an open-source knowledge management app.'),
@@ -418,7 +440,6 @@ class MainPageState extends ConsumerState<MainPage> {
       ],
     );
   }
-
 
   void _showTagSelectionDialog(BuildContext context) {
     showDialog(
@@ -441,12 +462,13 @@ class MainPageState extends ConsumerState<MainPage> {
                         },
                       ),
                       ...tags.map((tag) => ListTile(
-                        title: TagText(tag),
-                        onTap: () {
-                          ref.read(selectedTagProvider.notifier).state = tag;
-                          Navigator.of(context).pop();
-                        },
-                      )),
+                            title: TagText(tag),
+                            onTap: () {
+                              ref.read(selectedTagProvider.notifier).state =
+                                  tag;
+                              Navigator.of(context).pop();
+                            },
+                          )),
                     ],
                   ),
                 ),
@@ -524,7 +546,7 @@ class MainPageState extends ConsumerState<MainPage> {
 
   void _performSearch(String query) {
     setState(() {
-        ref.read(urlSearchTermProvider.notifier).state = query;
+      ref.read(urlSearchTermProvider.notifier).state = query;
     });
   }
 }
