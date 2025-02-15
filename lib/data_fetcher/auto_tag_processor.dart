@@ -8,7 +8,7 @@ import 'processor.dart';
 class AutoTagProcessor extends Processor {
   final SembastDatabase database = SembastDatabase.instance;
 
-  AutoTagProcessor();
+  AutoTagProcessor(super.ref);
 
   @override
   Future<void> process({bool force = false}) async {
@@ -61,5 +61,5 @@ class AutoTagProcessor extends Processor {
 }
 
 final autoTagProcessorProvider = Provider<AutoTagProcessor>((ref) {
-  return AutoTagProcessor();
+  return AutoTagProcessor(ref);
 });

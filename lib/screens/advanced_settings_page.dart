@@ -14,7 +14,7 @@ class AdvancedSettingsPage extends ConsumerWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            final garbageProcessor = GarbageProcessor();
+            final garbageProcessor = GarbageProcessor(ref as Ref<Object?>);
             await garbageProcessor.process(force: true);
           },
           child: const Text('Delete all marked items'),

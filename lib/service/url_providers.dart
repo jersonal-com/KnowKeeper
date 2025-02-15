@@ -11,10 +11,10 @@ import 'database_providers.dart';
 
 final processorsProvider = Provider<List<Processor>>((ref) {
   return [
-    EmailUrlProcessor(),
-    RssProcessor(),
-    EmailNewsletterProcessor(),
-    AutoTagProcessor(),
+    EmailUrlProcessor(ref),
+    RssProcessor(ref),
+    EmailNewsletterProcessor(ref),
+    AutoTagProcessor(ref),
   ];
 });
 

@@ -4,47 +4,27 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:enough_mail/enough_mail.dart';
 import 'package:path/path.dart';
+import '../service/email_fetcher_provider.dart';
 import 'email_attachment_directory.dart';
 import '../database/sembast_database.dart';
-import 'imap_config.dart';
 import '../data/url_entry.dart';
 import 'processor.dart';
 
 class EmailNewsletterProcessor extends Processor {
-  ImapConfig? _config;
   final SembastDatabase database = SembastDatabase.instance;
 
-  EmailNewsletterProcessor() {
-    _initConfig();
-  }
-
-  Future<void> _initConfig() async {
-    _config = await ImapConfig.fromSharedPreferences();
-  }
+  EmailNewsletterProcessor(super.ref);
 
   @override
   Future<void> process() async {
-    final client = ImapClient(isLogEnabled: false);
+    final messages = await ref.read(fetchedEmailsProvider.future);
 
-    if (_config == null) {
-      return;
-    }
-
-    try {
-      await client.connectToServer(_config!.server, _config!.port, isSecure: _config!.isSecure);
-      await client.login(_config!.username, _config!.password);
-      await client.selectInbox();
-
-      final fetchResult = await client.fetchRecentMessages(messageCount: 100, criteria: 'BODY.PEEK[]');
-      for (final message in fetchResult.messages) {
-        final subject = message.decodeSubject();
-        if (subject != null && ! subject.startsWith('RL:')) {
-          final urlEntry = await processEmail(message);
-          await database.addUrlEntry(urlEntry);
-        }
+    for (final message in messages) {
+      final subject = message.decodeSubject();
+      if (subject != null && !subject.startsWith('RL:')) {
+        final urlEntry = await processEmail(message);
+        await database.addUrlEntry(urlEntry);
       }
-    } finally {
-      await client.logout();
     }
   }
 
@@ -56,7 +36,7 @@ class EmailNewsletterProcessor extends Processor {
     String plainTextContent = '';
     List<String> attachments = [];
 
-    final attachmentsDir =  await getEmailAttachmentDirectory() ;
+    final attachmentsDir = await getEmailAttachmentDirectory();
     if (!await attachmentsDir.exists()) {
       await attachmentsDir.create(recursive: true);
     }
@@ -78,7 +58,7 @@ class EmailNewsletterProcessor extends Processor {
         plainTextContent += part.decodeContentText() ?? '';
       } else if (part.mediaType.text == 'text/html') {
         htmlContent += part.decodeContentText() ?? '';
-      } else if (part.parts!= null && part.parts!.isNotEmpty) {
+      } else if (part.parts != null && part.parts!.isNotEmpty) {
         final partsList = part.parts ?? [];
         for (final subPart in partsList) {
           await processPart(subPart);
@@ -90,11 +70,13 @@ class EmailNewsletterProcessor extends Processor {
 
     final content = htmlContent.isNotEmpty ? htmlContent : plainTextContent;
     UrlEntry entry = UrlEntry(
-      url: 'email:',  // Using a custom scheme to identify emails
+      url: 'email:',
+      // Using a custom scheme to identify emails
       title: subject,
       source: 'newsletter',
       description: from,
-      imageUrl: '',  // You might want to use the first image attachment as a preview
+      imageUrl: '',
+      // You might want to use the first image attachment as a preview
       text: content,
       date: date,
       isEmail: true,
@@ -113,5 +95,4 @@ class EmailNewsletterProcessor extends Processor {
     final md5String = base64Encode(hash.bytes);
     return md5String;
   }
-
 }

@@ -11,7 +11,7 @@ import '../data/url_entry.dart';
 class RssProcessor extends Processor {
   final SembastDatabase database = SembastDatabase.instance;
 
-  RssProcessor() : super();
+  RssProcessor(super.ref);
 
   @override
   Future<void> process() async {

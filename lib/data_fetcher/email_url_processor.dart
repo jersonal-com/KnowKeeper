@@ -1,55 +1,26 @@
-import 'package:enough_mail/enough_mail.dart';
 import '../database/sembast_database.dart';
-import 'imap_config.dart';
+import '../service/email_fetcher_provider.dart';
 import 'fetch_url_entry.dart';
 import 'processor.dart';
 
-class EmailUrlProcessor implements Processor {
-  ImapConfig? _config;
+class EmailUrlProcessor extends Processor {
   final SembastDatabase database = SembastDatabase.instance;
 
-  EmailUrlProcessor() {
-    _initConfig();
-  }
-
-  Future<void> _initConfig() async {
-    _config = await ImapConfig.fromSharedPreferences();
-  }
+  EmailUrlProcessor(super.ref);
 
   @override
   Future<void> process() async {
+    final messages = await ref.read(fetchedEmailsProvider.future);
 
-    if (_config == null) {
-      return;
-    }
-
-    final client = ImapClient(isLogEnabled: false);
-
-
-    try {
-      await client.connectToServer(_config!.server, _config!.port, isSecure: _config!.isSecure);
-      await client.login(_config!.username, _config!.password);
-
-
-      await client.selectInbox();
-      final fetchResult = await client.fetchRecentMessages(
-          messageCount: 100, criteria: 'BODY[HEADER.FIELDS (SUBJECT)]');
-
-      for (final message in fetchResult.messages) {
-        final subject = message.decodeSubject();
-        if (subject != null && subject.startsWith('RL:')) {
-          final url = subject.substring(3).trim();
-          if (_isValidUrl(url)) {
-            final urlEntry = await fetchUrlEntry(url);
-            await database.addUrlEntry(urlEntry);
-          }
+    for (final message in messages) {
+      final subject = message.decodeSubject();
+      if (subject != null && subject.startsWith('RL:')) {
+        final url = subject.substring(3).trim();
+        if (_isValidUrl(url)) {
+          final urlEntry = await fetchUrlEntry(url);
+          await database.addUrlEntry(urlEntry);
         }
       }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error processing emails: $e');
-    } finally {
-      await client.logout();
     }
   }
 

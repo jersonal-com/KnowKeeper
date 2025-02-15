@@ -13,7 +13,7 @@ class GarbageProcessor extends Processor {
   static const String LAST_RUN_KEY = 'garbage_processor_last_run';
   final SembastDatabase database = SembastDatabase.instance;
 
-  GarbageProcessor();
+  GarbageProcessor(super.ref);
 
   @override
   Future<void> process({bool force = false}) async {
