@@ -50,13 +50,19 @@ class MainPageState extends ConsumerState<MainPage> {
     for (final processor in processors) {
       await processor.process();
     }
-    ref.invalidate(urlEntriesProvider);
+    setState(() {
+      ref.invalidate(urlEntriesProvider);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final urlEntriesAsyncValue = ref.watch(urlEntriesProvider);
     final selectedTag = ref.watch(selectedTagProvider);
+
+    urlEntriesAsyncValue.whenData((entries) {
+      debugPrint('MainPage build: Received ${entries.length} entries');
+    });
 
     final screenSize = MediaQuery.of(context).size;
     final imageWidth = (screenSize.width < screenSize.height

@@ -1,1 +1,2 @@
 * Improved Performance by caching emails
+* Improved Performance of RSS fetching by caching RSS feeds and running fetches in parallel
