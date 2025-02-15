@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../main.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
+import '../theme/my_app_bar.dart';
 import '../widgets/tag_text.dart';
 
 class TagManagementPage extends ConsumerStatefulWidget {
@@ -19,8 +20,8 @@ class TagManagementPageState extends ConsumerState<TagManagementPage> {
     final tagsAsyncValue = ref.watch(allTagsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Tags'),
+      appBar: const MyAppBar(
+        title: Text('Manage Tags'),
       ),
       body: tagsAsyncValue.when(
         data: (tags) => ListView.builder(

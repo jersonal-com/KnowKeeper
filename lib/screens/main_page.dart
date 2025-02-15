@@ -8,6 +8,8 @@ import '../data/url_entry.dart';
 import '../main.dart';
 import '../service/database_providers.dart';
 import '../service/url_providers.dart';
+import '../theme/app_theme.dart';
+import '../theme/my_app_bar.dart';
 import 'detail_page.dart';
 import 'config_page.dart';
 import 'export_page.dart'; // Add this import
@@ -71,7 +73,7 @@ class MainPageState extends ConsumerState<MainPage> {
         0.2;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: MyAppBar(
         title: _isSearching
             ? TextField(
           controller: _searchController,
@@ -243,10 +245,20 @@ class MainPageState extends ConsumerState<MainPage> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  secondGradientColor,
+                ],
+              ),
             ),
-            child: const Text('Know Keeper',
-                style: TextStyle(color: Colors.white, fontSize: 24)),
+            child: Center(
+              child: Image.asset(
+                'assets/icon/icon.png',
+              )
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.add),

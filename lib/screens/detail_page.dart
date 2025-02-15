@@ -10,6 +10,7 @@ import '../data/url_entry.dart';
 import '../service/database_providers.dart';
 import '../service/selection_provider.dart';
 import '../service/url_providers.dart';
+import '../theme/my_app_bar.dart';
 import '../widgets/tag_color_dot.dart';
 
 class DetailPage extends ConsumerStatefulWidget {
@@ -33,7 +34,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
     final currentSelection = ref.watch(currentSelectionProvider);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: MyAppBar(
         title: const Text('Article Details'),
         actions: [
           IconButton(

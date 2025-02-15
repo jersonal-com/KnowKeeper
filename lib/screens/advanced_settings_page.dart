@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data_fetcher/garbage_processor.dart';
+import '../theme/my_app_bar.dart';
 
 class AdvancedSettingsPage extends ConsumerWidget {
   const AdvancedSettingsPage({super.key});
@@ -8,8 +9,8 @@ class AdvancedSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Advanced Settings'),
+      appBar: const MyAppBar(
+        title: Text('Advanced Settings'),
       ),
       body: Center(
         child: ElevatedButton(

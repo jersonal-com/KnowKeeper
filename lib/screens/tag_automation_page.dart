@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../service/url_providers.dart';
+import '../theme/my_app_bar.dart';
 
 class TagAutomationPage extends ConsumerStatefulWidget {
   const TagAutomationPage({super.key});
@@ -46,8 +47,8 @@ class TagAutomationPageState extends ConsumerState<TagAutomationPage> {
     final tagsAsyncValue = ref.watch(allTagsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tag Automation'),
+      appBar: const MyAppBar(
+        title: Text('Tag Automation'),
       ),
       body: tagsAsyncValue.when(
         data: (tags) => ListView(

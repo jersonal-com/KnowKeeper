@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../service/database_providers.dart';
+import '../theme/my_app_bar.dart';
 
 class ExportPage extends ConsumerWidget {
   const ExportPage({super.key});
@@ -10,7 +11,7 @@ class ExportPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: MyAppBar(
         title: const Text('Export Highlights'),
         actions: [
           FutureBuilder<String>(

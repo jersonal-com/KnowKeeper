@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../service/theme_provider.dart';
+import '../theme/my_app_bar.dart';
 import 'advanced_settings_page.dart';
 
 class ConfigPage extends ConsumerStatefulWidget {
@@ -104,8 +105,8 @@ class ConfigPageState extends ConsumerState<ConfigPage> {
 
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configuration'),
+      appBar: const MyAppBar(
+        title: Text('Configuration'),
       ),
       body: SingleChildScrollView(
         child: Padding(

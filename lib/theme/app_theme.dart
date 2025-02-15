@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+const Color secondGradientColor = Color(0xFF80339B);
+
 class AppTheme {
-  static const Color _primaryColor = Color(0xFF04396D);
+  static const Color _primaryColor = Color(0xFF120770);
 
   static final ColorScheme _lightColorScheme = ColorScheme.fromSeed(
     seedColor: _primaryColor,
