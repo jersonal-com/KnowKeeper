@@ -72,6 +72,22 @@ class UrlEntry {
     }
   }
 
+  String fullDomain() {
+    if (isEmail) {
+      // For email entries, we don't have a protocol, so we'll use https by default
+      return 'https://${domain()}';
+    } else {
+      // For regular URL entries, we can parse the URL to get the protocol
+      try {
+        final uri = Uri.parse(url);
+        return '${uri.scheme}://${uri.host}';
+      } catch (e) {
+        // If parsing fails, default to https
+        return 'https://${domain()}';
+      }
+    }
+  }
+
   int wordCount() {
     // Parse the HTML content
     final document = html_parser.parse(text);

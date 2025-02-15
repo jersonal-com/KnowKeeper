@@ -8,6 +8,7 @@ import 'package:know_keeper/widgets/tag_text.dart';
 import '../data/url_entry.dart';
 import '../main.dart';
 import '../service/database_providers.dart';
+import '../service/favicon_provider.dart';
 import '../service/url_providers.dart';
 import '../theme/app_theme.dart';
 import '../theme/my_app_bar.dart';
@@ -198,20 +199,28 @@ class MainPageState extends ConsumerState<MainPage> {
       ),
       child: ListTile(
         leading: SizedBox(
-          width: imageWidth / 2,
-          child: entry.imageUrl.isNotEmpty
-              ? CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.onSecondary,
-                  backgroundImage: NetworkImage(entry.imageUrl),
-                  radius: imageWidth / 2,
-                  child: entry.imageUrl.isEmpty
-                      ? Icon(Icons.error, size: imageWidth)
-                      : null,
-                )
-              : SizedBox(
-                  child: Icon(Icons.article, size: imageWidth * 0.4),
-                ),
+        width: imageWidth / 2,
+        child: Consumer(
+          builder: (context, ref, child) {
+            final faviconUrl = ref.watch(faviconProvider(entry.fullDomain()));
+            return faviconUrl.when(
+              data: (url) {
+                if (url != null) {
+                  return CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                    backgroundImage: NetworkImage(url),
+                    radius: imageWidth / 2,
+                  );
+                } else {
+                  return Icon(Icons.article, size: imageWidth * 0.4);
+                }
+              },
+              loading: () => const CircularProgressIndicator(),
+              error: (_, __) => Icon(Icons.article, size: imageWidth * 0.4),
+            );
+          },
         ),
+      ),
         title: Text(
           entry.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
