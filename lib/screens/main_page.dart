@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
+import 'package:know_keeper/widgets/nothing_here.dart';
 import 'package:know_keeper/widgets/tag_color_dot.dart';
 import 'package:know_keeper/widgets/tag_text.dart';
 import '../data/url_entry.dart';
@@ -138,6 +139,10 @@ class MainPageState extends ConsumerState<MainPage> {
               return entry.tags.contains(selectedTag);
             }).toList();
 
+            if (urlEntries.isEmpty) {
+              return const NothingHere();
+            }
+
             return ListView.builder(
               itemCount: filteredEntries.length,
               itemBuilder: (context, index) {
@@ -257,6 +262,7 @@ class MainPageState extends ConsumerState<MainPage> {
             child: Center(
               child: Image.asset(
                 'assets/icon/icon.png',
+                width: 80,
               )
             ),
           ),
