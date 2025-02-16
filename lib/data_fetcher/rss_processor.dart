@@ -7,19 +7,27 @@ import 'package:intl/intl.dart';
 import '../data_fetcher/fetch_url_entry.dart';
 import 'package:rss_dart/dart_rss.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../service/database_providers.dart';
 import '../service/url_providers.dart';
 import 'processor.dart';
 import '../database/sembast_database.dart';
 
 class RssProcessor extends Processor {
-  final SembastDatabase database = SembastDatabase.instance;
+  late SembastDatabase database;
 
-  RssProcessor(super.ref);
+  RssProcessor(super.ref) {
+    database = ref.read(databaseProvider).database;
+  }
 
   @override
   Future<void> process() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final rssFeeds = prefs.getStringList('rssFeeds') ?? [];
+
+    if (rssFeeds.isEmpty) {
+      debugPrint("RssProcessor: No RSS feeds configured. Skipping.");
+      return;
+    }
 
     // Get all existing entries
     final existingEntries = await ref.read(urlEntriesProvider.future);

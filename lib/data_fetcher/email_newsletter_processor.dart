@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:enough_mail/enough_mail.dart';
 import 'package:path/path.dart';
+import '../service/database_providers.dart';
 import '../service/email_fetcher_provider.dart';
 import 'email_attachment_directory.dart';
 import '../database/sembast_database.dart';
@@ -11,9 +12,11 @@ import '../data/url_entry.dart';
 import 'processor.dart';
 
 class EmailNewsletterProcessor extends Processor {
-  final SembastDatabase database = SembastDatabase.instance;
+  late SembastDatabase database;
 
-  EmailNewsletterProcessor(super.ref);
+  EmailNewsletterProcessor(super.ref) {
+    database = ref.read(databaseProvider).database;
+  }
 
   @override
   Future<void> process() async {

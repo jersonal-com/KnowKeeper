@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:know_keeper/data_fetcher/fetch_url_entry.dart';
+import 'package:know_keeper/testing/test_configuration.dart';
+import 'package:know_keeper/widgets/custom_image_provider.dart';
 import 'package:know_keeper/widgets/nothing_here.dart';
 import 'package:know_keeper/widgets/tag_color_dot.dart';
 import 'package:know_keeper/widgets/tag_text.dart';
@@ -49,14 +51,19 @@ class MainPageState extends ConsumerState<MainPage> {
   }
 
   Future<void> _refreshData() async {
+    if (TestConfiguration.isTestMode) {
+      return;
+    }
     // await ref.read(databaseProvider).wipe();
     final processors = ref.read(processorsProvider);
     for (final processor in processors) {
       await processor.process();
     }
-    setState(() {
+    if (mounted) {
+      setState(() {
       ref.invalidate(urlEntriesProvider);
     });
+    }
   }
 
   @override
@@ -203,7 +210,7 @@ class MainPageState extends ConsumerState<MainPage> {
           child: entry.imageUrl.isNotEmpty
               ? CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.onSecondary,
-                  backgroundImage: NetworkImage(entry.imageUrl),
+                  backgroundImage: customImageProvider(entry.imageUrl),
                   radius: imageWidth / 2,
                   child: entry.imageUrl.isEmpty
                       ? Icon(Icons.error, size: imageWidth)
@@ -219,7 +226,7 @@ class MainPageState extends ConsumerState<MainPage> {
                           return CircleAvatar(
                             backgroundColor:
                                 Theme.of(context).colorScheme.onSecondary,
-                            backgroundImage: NetworkImage(url),
+                            backgroundImage: customImageProvider(url),
                             radius: imageWidth / 2,
                           );
                         } else {

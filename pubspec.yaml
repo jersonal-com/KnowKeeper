@@ -32,6 +32,8 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   lottie: ^3.3.1
   favicon: ^1.1.2
+  cached_network_image: ^3.4.1
+  device_frame: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +48,7 @@ flutter:
      - assets/icon/icon.png
      - assets/animations/search.json
      - assets/animations/nothinghere.json
+     - assets/testImages/
 
 flutter_launcher_icons:
   android: "launcher_icon"

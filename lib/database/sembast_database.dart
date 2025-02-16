@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:know_keeper/testing/test_configuration.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -40,10 +41,16 @@ class SembastDatabase {
   }
 
   Future<void> _openDatabase() async {
-    final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = join(appDocumentDir.path, DB_NAME);
-    final database = await databaseFactoryIo.openDatabase(dbPath);
-    _dbOpenCompleter!.complete(database);
+    if (TestConfiguration.isTestMode) {
+      disableSembastCooperator();
+      final database = await databaseFactoryIo.openDatabase(':memory:');
+      _dbOpenCompleter!.complete(database);
+    } else {
+      final appDocumentDir = await getApplicationDocumentsDirectory();
+      final dbPath = join(appDocumentDir.path, DB_NAME);
+      final database = await databaseFactoryIo.openDatabase(dbPath);
+      _dbOpenCompleter!.complete(database);
+    }
   }
 
   Future<void> addUrlEntry(UrlEntry entry) async {

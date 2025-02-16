@@ -11,12 +11,14 @@ import '../test_helper.dart';
 void main() {
 
   setUpAll(() async {
+    // HttpOverrides.global = null; //MyHttpOverrides();
     await loadAppFonts();
     SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('Generate screenshots', (tester) async {
     final devices = [
+      Device.phone,
       Device.phone,
       Device.iphone11,
       Device.tabletPortrait,
@@ -31,21 +33,27 @@ void main() {
 
     for (final device in devices) {
       for (final scenario in scenarios) {
-        // Set the screen size to match the device
-        tester.view.physicalSize = device.size;
-        tester.view.devicePixelRatio = device.devicePixelRatio;
 
-        // Pump the widget
-        await tester.pumpWidget(TestHelper.wrapWithProviders(scenario.$2));
 
-        // Allow for any animations to complete
-        await tester.pumpAndSettle();
+            // Set the screen size to match the device
+            tester.view.physicalSize = device.size;
+            tester.view.devicePixelRatio = device.devicePixelRatio;
 
-        // Capture the screenshot
-        await expectLater(
-          find.byType(MaterialApp),
-          matchesGoldenFile('goldens/know_keeper_${scenario.$1}_${device.name}.png'),
-        );
+
+            // Pump the widget
+            await tester.pumpWidget(TestHelper.wrapWithProviders(scenario.$2),
+                duration: const Duration(seconds: 5));
+
+            await tester.pumpAndSettle(const Duration(seconds: 15),
+              EnginePhase.sendSemanticsUpdate, const Duration(seconds: 30),);
+
+            // Capture the screenshot
+            await expectLater(
+              find.byType(MaterialApp),
+              matchesGoldenFile(
+                  'goldens/know_keeper_${scenario.$1}_${device.name}.png'),
+            );
+
       }
     }
 
@@ -54,3 +62,4 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   });
 }
+

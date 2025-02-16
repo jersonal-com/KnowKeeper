@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../database/sembast_database.dart';
 import '../data/url_entry.dart';
+import '../service/database_providers.dart';
 import 'processor.dart';
 
 class AutoTagProcessor extends Processor {
-  final SembastDatabase database = SembastDatabase.instance;
+  late SembastDatabase database;
 
-  AutoTagProcessor(super.ref);
+  AutoTagProcessor(super.ref) {
+    database = ref.read(databaseProvider).database;
+  }
 
   @override
   Future<void> process({bool force = false}) async {

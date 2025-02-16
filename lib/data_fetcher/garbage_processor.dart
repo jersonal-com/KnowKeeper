@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../database/sembast_database.dart';
 import '../data/url_entry.dart';
+import '../service/database_providers.dart';
 import 'email_newsletter_processor.dart';
 import 'imap_config.dart';
 import 'processor.dart';
@@ -11,9 +12,11 @@ import 'processor.dart';
 class GarbageProcessor extends Processor {
   // ignore: constant_identifier_names
   static const String LAST_RUN_KEY = 'garbage_processor_last_run';
-  final SembastDatabase database = SembastDatabase.instance;
+  late SembastDatabase database;
 
-  GarbageProcessor(super.ref);
+  GarbageProcessor(super.ref) {
+    database = ref.read(databaseProvider).database;
+  }
 
   @override
   Future<void> process({bool force = false}) async {

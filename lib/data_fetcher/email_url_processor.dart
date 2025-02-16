@@ -1,12 +1,15 @@
 import '../database/sembast_database.dart';
+import '../service/database_providers.dart';
 import '../service/email_fetcher_provider.dart';
 import 'fetch_url_entry.dart';
 import 'processor.dart';
 
 class EmailUrlProcessor extends Processor {
-  final SembastDatabase database = SembastDatabase.instance;
+  late SembastDatabase database;
 
-  EmailUrlProcessor(super.ref);
+  EmailUrlProcessor(super.ref) {
+    database = ref.read(databaseProvider).database;
+  }
 
   @override
   Future<void> process() async {

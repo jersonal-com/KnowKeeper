@@ -11,6 +11,7 @@ import '../data/highlight.dart';
 import '../data/highlight_mode.dart';
 import '../data/link_info.dart';
 import '../service/selection_provider.dart';
+import 'custom_image_widget.dart';
 
 
 class ContentWidget extends ConsumerStatefulWidget {
@@ -92,6 +93,7 @@ class ContentWidgetState extends ConsumerState<ContentWidget> {
 
     @override
   void dispose() {
+    _debounce?.cancel();
     _gestureRecognizers.forEach((key, recognizer) => recognizer.dispose());
     super.dispose();
   }
@@ -226,7 +228,7 @@ class ContentWidgetState extends ConsumerState<ContentWidget> {
       final imageUrl = resolveUrl(src);
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Image.network(imageUrl),
+        child: CustomImageWidget(imageUrl),
       );
     }
     return const SizedBox.shrink();

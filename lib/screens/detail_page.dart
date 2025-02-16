@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:know_keeper/testing/test_configuration.dart';
 import 'package:know_keeper/widgets/content_switcher_widget.dart';
+import 'package:know_keeper/widgets/custom_image_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/highlight.dart';
@@ -108,7 +110,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
         ],
       ),
       body: urlEntryAsyncValue.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => (TestConfiguration.isTestMode)
+            ? const Placeholder()
+            : const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (urlEntry) {
           if (urlEntry == null) {
@@ -120,7 +124,7 @@ class DetailPageState extends ConsumerState<DetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (urlEntry.imageUrl.isNotEmpty)
-                  Image.network(urlEntry.imageUrl),
+                  CustomImageWidget(urlEntry.imageUrl,),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -139,7 +143,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                       _buildTagsRow(urlEntry),
                       const SizedBox(height: 16),
                       highlightsAsyncValue.when(
-                        loading: () => const CircularProgressIndicator(),
+                        loading: () => (TestConfiguration.isTestMode)
+                            ? const Placeholder()
+                            : const CircularProgressIndicator(),
                         error: (err, stack) =>
                             Text('Error loading highlights: $err'),
                         data: (highlights) => ContentSwitcherWidget(
@@ -236,7 +242,9 @@ class DetailPageState extends ConsumerState<DetailPage> {
                     ),
                   );
                 },
-                loading: () => const CircularProgressIndicator(),
+                loading: () => (TestConfiguration.isTestMode)
+                    ? const Placeholder()
+                    : const CircularProgressIndicator(),
                 error: (error, stack) => Text('Error: $error'),
               );
             },
