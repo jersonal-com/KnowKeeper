@@ -31,8 +31,13 @@ void main() {
             final screenFilePath = DeviceInfoUtils.createFileName(
                 scenario.name, deviceInfo, locale, fromRoot: true);
 
-            tester.view.physicalSize = deviceInfo.device.size;
-            tester.view.devicePixelRatio = deviceInfo.device.devicePixelRatio;
+            tester.view.physicalSize = deviceInfo.size;
+            tester.view.devicePixelRatio = 1.0; // deviceInfo.devicePixelRatio
+
+            // ;
+
+            print("Size: ${tester.view.physicalSize}");
+            print("Pixel ratio: ${tester.view.devicePixelRatio}");
 
             await tester.pumpWidget(
               MaterialApp(

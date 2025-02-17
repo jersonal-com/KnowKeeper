@@ -30,8 +30,8 @@ void main() {
         for (var i = 0; i < 1; i++) {
           for (final scenario in ScenarioUtils.scenarios) {
             // Set the screen size to match the device
-            tester.view.physicalSize = deviceInfo.device.size;
-            tester.view.devicePixelRatio = deviceInfo.device.devicePixelRatio;
+            tester.view.physicalSize = deviceInfo.size;
+            tester.view.devicePixelRatio = deviceInfo.devicePixelRatio;
 
             // Pump the widget
             await tester.pumpWidget(
