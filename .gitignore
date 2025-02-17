@@ -56,3 +56,4 @@ app.*.map.json
 /android/fastlane/README.md
 /android/fastlane/.env
 /test/screenshots/goldens/
+/android/fastlane/metadata/android/en-US/images/

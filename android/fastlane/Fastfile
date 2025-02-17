@@ -59,6 +59,7 @@ platform :android do
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do
+    flutter_generate_screenshots()
     gradle(task: "clean assembleRelease")
     upload_to_play_store
   end
@@ -84,4 +85,13 @@ platform :android do
     File.write(path, content)
     puts "New version: #{newVersionName}"
   end
+
+  desc "Generate Screenshots"
+  lane :flutter_generate_screenshots do
+    sh "flutter test --update-goldens test/screenshots/golden_screenshots.dart"
+    sh "flutter pub get"
+    sh "flutter test --update-goldens test/screenshots/golden_screenshots_decoration.dart"
+    sh "flutter test --update-goldens test/screenshots/golden_screenshots_cleanup.dart"
+  end
+
 end

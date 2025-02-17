@@ -70,11 +70,6 @@ class MainPageState extends ConsumerState<MainPage> {
   Widget build(BuildContext context) {
     final urlEntriesAsyncValue = ref.watch(urlEntriesProvider);
     final selectedTag = ref.watch(selectedTagProvider);
-
-    urlEntriesAsyncValue.whenData((entries) {
-      debugPrint('MainPage build: Received ${entries.length} entries');
-    });
-
     final screenSize = MediaQuery.of(context).size;
     final imageWidth = (screenSize.width < screenSize.height
             ? screenSize.width

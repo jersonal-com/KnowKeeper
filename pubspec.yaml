@@ -1,7 +1,7 @@
 name: know_keeper
 description: "An open source knowledge and read it late app."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 0.5.7+22
+version: 0.5.7+25
 license: GPL-3.0-or-later
 
 environment:
@@ -34,12 +34,12 @@ dependencies:
   favicon: ^1.1.2
   cached_network_image: ^3.4.1
   device_frame: ^1.2.0
+  golden_toolkit: ^0.15.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  golden_toolkit: ^0.15.0
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -49,6 +49,8 @@ flutter:
      - assets/animations/search.json
      - assets/animations/nothinghere.json
      - assets/testImages/
+     - test/screenshots/goldens/
+
 
 flutter_launcher_icons:
   android: "launcher_icon"

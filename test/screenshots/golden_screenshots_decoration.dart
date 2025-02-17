@@ -5,15 +5,14 @@
 @Tags(['screenshots'])
 library;
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:know_keeper/testing/device_info.dart';
 import 'package:know_keeper/testing/locales_info.dart';
 import 'package:know_keeper/testing/scenario_info.dart';
+import 'package:know_keeper/testing/screenshot_wrapper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:know_keeper/testing/test_helper.dart';
 
 
 void main() {
@@ -22,49 +21,50 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('Generate raw screenshots', (tester) async {
+  testWidgets('Generate framed screenshots', (tester) async {
     for (final locale in LocalesInfo.locales) {
       for (final deviceInfo in DeviceInfoUtils.devices) {
         // Do not ask why this has to run twice - otherwise Image.asset does
         // not render...
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < 2; i++) {
           for (final scenario in ScenarioUtils.scenarios) {
-            // Set the screen size to match the device
+            final screenFilePath = DeviceInfoUtils.createFileName(
+                scenario.name, deviceInfo, locale, fromRoot: true);
+
             tester.view.physicalSize = deviceInfo.device.size;
             tester.view.devicePixelRatio = deviceInfo.device.devicePixelRatio;
 
-            // Pump the widget
             await tester.pumpWidget(
-              TestHelper.wrapWithProviders(scenario.widget,
-                  themeMode: scenario.themeMode ?? ThemeMode.light),
+              MaterialApp(
+                home: ScreenshotWrapper(
+                  device: deviceInfo.deviceFrameInfo,
+                  message: scenario.message,
+                  orientation: deviceInfo.orientation,
+                  child: Image.asset(screenFilePath),
+                ),
+              ),
             );
 
-            // Execute pre-screenshot action if defined
-            if (scenario.preScreenshotAction != null) {
-              await scenario.preScreenshotAction!(tester);
-            }
-
-            // Pump a few seconds
             for (var j = 0; j < 50; j++) {
               await tester.pump();
             }
 
-            await tester.pumpAndSettle(const Duration(seconds: 15));
+            await tester.pumpAndSettle();
 
-            // Capture the raw screenshot
-            final fileName =
-                DeviceInfoUtils.createFileName(scenario.name, deviceInfo, locale);
+            final framedFileName = DeviceInfoUtils.createFileName(
+                scenario.name, deviceInfo, locale, framed: true);
             await expectLater(
-              find.byType(MaterialApp),
-              matchesGoldenFile(fileName),
+              find.byType(ScreenshotWrapper),
+              matchesGoldenFile(framedFileName),
             );
           }
         }
       }
     }
 
-    // Reset the screen size
+    // Reset the window size and pixel ratio
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
   });
+
 }

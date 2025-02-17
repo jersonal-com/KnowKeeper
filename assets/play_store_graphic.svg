@@ -10,7 +10,7 @@
    xml:space="preserve"
    inkscape:version="1.4 (1:1.4+202410161351+e7c3feb100)"
    sodipodi:docname="play_store_graphic.svg"
-   inkscape:export-filename="/home/olf/tmp/drawing.png"
+   inkscape:export-filename="../android/fastlane/metadata/android/en-US/images/featureGraphic.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -30,10 +30,10 @@
      inkscape:zoom="0.74386226"
      inkscape:cx="422.12116"
      inkscape:cy="328.68988"
-     inkscape:window-width="1870"
-     inkscape:window-height="1011"
-     inkscape:window-x="50"
-     inkscape:window-y="1112"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
+     inkscape:window-x="1920"
+     inkscape:window-y="1080"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" /><defs
      id="defs1"><rect
@@ -141,15 +141,15 @@
        style="font-size:192px;line-height:0.5;font-family:Kavivanar;-inkscape-font-specification:Kavivanar;text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);fill:#5339a6;fill-opacity:1;stroke:#493ea7;stroke-width:0.377953;stroke-linecap:round;stroke-opacity:1"><tspan
          x="543.11133"
          y="244.57336"
-         id="tspan6"><tspan
+         id="tspan3"><tspan
            style="font-size:96px;font-family:Teko;-inkscape-font-specification:Teko"
-           id="tspan2">Know
+           id="tspan1">Know
 </tspan></tspan><tspan
          x="543.11133"
          y="342.37042"
-         id="tspan8"><tspan
+         id="tspan5"><tspan
            style="font-size:96px;font-family:Teko;-inkscape-font-specification:Teko"
-           id="tspan7">Keeper</tspan></tspan></text><g
+           id="tspan4">Keeper</tspan></tspan></text><g
        inkscape:label="Ebene 1"
        id="layer1-9"
        transform="translate(-20.385901,-81.220097)"><path
