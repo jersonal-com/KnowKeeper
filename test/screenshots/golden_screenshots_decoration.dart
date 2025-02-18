@@ -32,9 +32,7 @@ void main() {
                 scenario.name, deviceInfo, locale, fromRoot: true);
 
             tester.view.physicalSize = deviceInfo.size;
-            tester.view.devicePixelRatio = 1.0; // deviceInfo.devicePixelRatio
-
-            // ;
+            tester.view.devicePixelRatio = deviceInfo.devicePixelRatio;
 
             print("Size: ${tester.view.physicalSize}");
             print("Pixel ratio: ${tester.view.devicePixelRatio}");
@@ -63,6 +61,10 @@ void main() {
               matchesGoldenFile(framedFileName),
             );
           }
+
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+
         }
       }
     }

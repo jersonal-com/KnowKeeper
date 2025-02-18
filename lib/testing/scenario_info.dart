@@ -43,7 +43,7 @@ class ScenarioUtils {
       widget: const MainPage(),
       message: 'Supports light and dark mode',
       appStoreNumber: 2,
-      documentScreenshot: 'dark_page',
+      documentScreenshot: 'dark_mode',
       themeMode: ThemeMode.dark,
     ),
     ScenarioData(
