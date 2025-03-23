@@ -34,9 +34,6 @@ void main() {
             tester.view.physicalSize = deviceInfo.size;
             tester.view.devicePixelRatio = deviceInfo.devicePixelRatio;
 
-            print("Size: ${tester.view.physicalSize}");
-            print("Pixel ratio: ${tester.view.devicePixelRatio}");
-
             await tester.pumpWidget(
               MaterialApp(
                 home: ScreenshotWrapper(
