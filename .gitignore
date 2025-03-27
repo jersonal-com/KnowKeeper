@@ -57,3 +57,5 @@ app.*.map.json
 /android/fastlane/.env
 /test/screenshots/goldens/
 /android/fastlane/metadata/android/en-US/images/
+/android/app/.cxx/
+/:memory:
