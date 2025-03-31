@@ -125,7 +125,7 @@ class ContentWidgetState extends ConsumerState<ContentWidget> {
 
     for (var element in allElements) {
       if (currentIndex < element.startIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, element.startIndex)));
+        spans.add(TextSpan(text: text.substring(currentIndex, min(text.length, element.startIndex))));
       }
 
       if (element is Highlight) {
@@ -137,7 +137,7 @@ class ContentWidgetState extends ConsumerState<ContentWidget> {
         currentIndex = highlightEnd;
       } else if (element is LinkInfo) {
         spans.add(TextSpan(
-          text: text.substring(element.startIndex, min(text.length, element.endIndex)),
+          text: text.substring(min(text.length, element.startIndex), min(text.length, element.endIndex)),
           style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
           recognizer: _getOrCreateLinkRecognizer(element.url),
         ));
